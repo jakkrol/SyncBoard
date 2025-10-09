@@ -14,7 +14,7 @@ app.prepare().then(() => {
   const httpServer = createServer(handle);
   const io = new Server(httpServer, {
     cors: {
-      origin: "*", // allow all for testing
+      origin: "*", 
       methods: ["GET", "POST"]
     }
   });
@@ -22,11 +22,11 @@ app.prepare().then(() => {
   io.on("connection", (socket: any) => {
     console.log(`a user connected: ${socket.id}`);
 
-    // Listen for moveCard events from this client
+    // Listen for moveCard events
     socket.on("moveCard", (data: any) => {
       console.log(`moveCard received from ${socket.id}:`, data);
 
-      // Broadcast to all other clients
+      // Send to other clients
       socket.broadcast.emit("moveCard", data);
     });
 

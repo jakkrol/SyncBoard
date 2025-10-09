@@ -8,7 +8,6 @@ export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    // Initialize socket only on client
     const s = io("http://localhost:3000");
     setSocket(s);
 
