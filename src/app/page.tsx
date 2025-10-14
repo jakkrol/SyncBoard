@@ -34,7 +34,7 @@ export default function Home() {
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
       <h1>Socket.IO Test</h1>
-      <p>Status: {connected ? "Connected ✅" : "Disconnected ❌"}</p>
+      <p>Status: {connected ? "Connected" : "Disconnected"}</p>
       <button onClick={sendEvent} style={{ marginBottom: 20 }}>
         Send moveCard event
       </button>
