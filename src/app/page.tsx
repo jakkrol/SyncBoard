@@ -1,5 +1,6 @@
 "use client";
 import { get } from "http";
+import { userAgent } from "next/server";
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -9,6 +10,8 @@ export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const drawing = useRef(false);
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const s = io("http://localhost:3000");
@@ -34,6 +37,15 @@ export default function Home() {
     socket?.emit("moveCard", { cardId: 1, position: "A2" });
   };
 
+  const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
+    ctx.strokeStyle = 'red';
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+    ctx.closePath();
+  }
+
   const getPositionMouse = (e: React.MouseEvent) => {
     const pos = canvasRef.current!.getBoundingClientRect();
     return {
@@ -42,10 +54,28 @@ export default function Home() {
     };
   }
 
-
   const handeMouseDown = (e: React.MouseEvent) =>{
+    drawing.current = true;
     const {x, y} = getPositionMouse(e);
+    lastPos.current = {x, y};
+
   };
+
+  const handeMouseMove = (e: React.MouseEvent) =>{
+    if(!drawing.current) return;
+    const {x, y} = getPositionMouse(e);
+    const ctx = canvasRef.current?.getContext('2d');
+    
+    
+    draw(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
+    lastPos.current = {x, y};
+    
+  }
+
+  const handeMouseUp = (e: React.MouseEvent) =>{
+    drawing.current = false;
+    lastPos.current = null;
+  }
 
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
@@ -68,6 +98,8 @@ export default function Home() {
         style={{border: 'solid 1px #fff', background: '#111' }}
         ref={canvasRef}
         onMouseDown={handeMouseDown}
+        onMouseMove={handeMouseMove}
+        onMouseUp={handeMouseUp}
       />
     </div>
   );
