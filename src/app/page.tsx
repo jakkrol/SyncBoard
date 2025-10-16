@@ -1,4 +1,5 @@
 "use client";
+import { get } from "http";
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -33,10 +34,17 @@ export default function Home() {
     socket?.emit("moveCard", { cardId: 1, position: "A2" });
   };
 
+  const getPositionMouse = (e: React.MouseEvent) => {
+    const pos = canvasRef.current!.getBoundingClientRect();
+    return {
+      x: e.clientX - pos.left,
+      y: e.clientY - pos.top
+    };
+  }
 
 
   const handeMouseDown = (e: React.MouseEvent) =>{
-
+    const {x, y} = getPositionMouse(e);
   };
 
   return (
