@@ -1,11 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
 export default function Home() {
   const [connected, setConnected] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const s = io("http://localhost:3000");
@@ -31,6 +33,12 @@ export default function Home() {
     socket?.emit("moveCard", { cardId: 1, position: "A2" });
   };
 
+
+
+  const handeMouseDown = (e: React.MouseEvent) =>{
+
+  };
+
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
       <h1>Socket.IO Test</h1>
@@ -44,6 +52,15 @@ export default function Home() {
           <li key={i}>{e}</li>
         ))}
       </ul>
+
+
+      <canvas
+        width={800}
+        height={600}
+        style={{border: 'solid 1px #fff', background: '#111' }}
+        ref={canvasRef}
+        onMouseDown={handeMouseDown}
+      />
     </div>
   );
 }
