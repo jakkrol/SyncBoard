@@ -10,6 +10,7 @@ export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const socketRef = useRef<Socket | null>(null);
   const drawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -24,6 +25,13 @@ export default function Home() {
       setEvents((prev) => [...prev, JSON.stringify(data)]);
     });
 
+    const ctx = canvasRef.current?.getContext('2d')!;
+    ctx.strokeStyle = 'red';
+
+    s.on("draw", ({ x0, y0, x1, y1 }: { x0: number; y0: number; x1: number; y1: number }) => {
+      draw(x0, y0, x1, y1, ctx);
+    })
+
     // Cleanup on unmount
     return () => {
       s.off("connect");
@@ -35,6 +43,7 @@ export default function Home() {
 
   const sendEvent = () => {
     socket?.emit("moveCard", { cardId: 1, position: "A2" });
+    
   };
 
   const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
@@ -68,6 +77,8 @@ export default function Home() {
     
     
     draw(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
+
+    socketRef.current?.emit("draw", {x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
     lastPos.current = {x, y};
     
   }

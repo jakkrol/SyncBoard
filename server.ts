@@ -28,6 +28,7 @@ app.prepare().then(() => {
 
       // Send to other clients
       socket.broadcast.emit("moveCard", data);
+      socket.broadcast.emit("draw", data);
     });
 
     socket.on("disconnect", () => {
