@@ -21,17 +21,22 @@ app.prepare().then(() => {
 
   io.on("connection", (socket: any) => {
     console.log(`a user connected: ${socket.id}`);
+    socket.on("join", (room: string) => {
+      socket.join(room);
+      console.log(`socket ${socket.id} joined room ${room}`);
+    })
 
 
     socket.on("moveCard", (data: any) => {
       console.log(`moveCard received from ${socket.id}:`, data);
-      socket.broadcast.emit("moveCard", data);
+      socket.to(data.room).emit("moveCard", data);
     });
 
 
     socket.on("draw", (data: any) => {
       console.log(`draw received from ${socket.id}:`, data);
-      socket.broadcast.emit("draw", data);
+      //socket.broadcast.emit("draw", data);
+      socket.to(data.room).emit("draw", data);
     });
 
     socket.on("disconnect", () => {
