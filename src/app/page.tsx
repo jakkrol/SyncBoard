@@ -16,6 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     const s = io("http://localhost:3000");
+    
     setSocket(s);
 
     s.on("connect", () => setConnected(true));
@@ -43,7 +44,6 @@ export default function Home() {
 
   const sendEvent = () => {
     socket?.emit("moveCard", { cardId: 1, position: "A2" });
-    
   };
 
   const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
@@ -77,8 +77,8 @@ export default function Home() {
     
     
     draw(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
-
-    socketRef.current?.emit("draw", {x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
+    //socketRef.current?.emit("draw", {x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
+    socket?.emit("draw", {x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
     lastPos.current = {x, y};
     
   }

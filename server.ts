@@ -22,12 +22,15 @@ app.prepare().then(() => {
   io.on("connection", (socket: any) => {
     console.log(`a user connected: ${socket.id}`);
 
-    // Listen for moveCard events
+
     socket.on("moveCard", (data: any) => {
       console.log(`moveCard received from ${socket.id}:`, data);
-
-      // Send to other clients
       socket.broadcast.emit("moveCard", data);
+    });
+
+
+    socket.on("draw", (data: any) => {
+      console.log(`draw received from ${socket.id}:`, data);
       socket.broadcast.emit("draw", data);
     });
 
