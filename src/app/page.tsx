@@ -13,8 +13,8 @@ export default function RoomSelect() {
 
   return (
     <div>
-      <h1>Choose a room</h1>
-      <input value={room} onChange={e => setRoom(e.target.value)} placeholder="Room name" />
+      <h1 className="m-1">Choose a room</h1>
+      <input className="m-1" value={room} onChange={e => setRoom(e.target.value)} placeholder="Room name" />
       <button onClick={joinRoom}>Join</button>
     </div>
   );
