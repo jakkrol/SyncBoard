@@ -46,7 +46,6 @@ export default function Home() {
       draw(x0, y0, x1, y1, ctx);
     })
 
-    // Cleanup on unmount
     return () => {
       s.off("connect");
       s.off("disconnect");
