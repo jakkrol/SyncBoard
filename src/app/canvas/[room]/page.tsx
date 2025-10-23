@@ -33,6 +33,15 @@ export default function Home() {
     const ctx = canvasRef.current?.getContext('2d')!;
     ctx.strokeStyle = 'red';
 
+    s.on("loadBoard", (data: string) => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = data; 
+    });
+
     s.on("draw", ({ x0, y0, x1, y1 }: { x0: number; y0: number; x1: number; y1: number }) => {
       draw(x0, y0, x1, y1, ctx);
     })
@@ -83,6 +92,7 @@ export default function Home() {
     draw(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
     //socketRef.current?.emit("draw", {x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
     socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
+    socket?.emit("saveBoard", {room, data: canvasRef.current?.toDataURL()});
     lastPos.current = {x, y};
     
   }
