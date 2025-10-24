@@ -26,9 +26,9 @@ export default function Home() {
         s.emit("join", room);   
     });
     s.on("disconnect", () => setConnected(false));
-    s.on("moveCard", (data) => {
-      setEvents((prev) => [...prev, JSON.stringify(data)]);
-    });
+    // s.on("moveCard", (data) => {
+    //   setEvents((prev) => [...prev, JSON.stringify(data)]);
+    // });
 
     const ctx = canvasRef.current?.getContext('2d')!;
     ctx.strokeStyle = 'red';
@@ -49,14 +49,14 @@ export default function Home() {
     return () => {
       s.off("connect");
       s.off("disconnect");
-      s.off("moveCard");
+      // s.off("moveCard");
       s.disconnect();
     };
   }, [room]);
 
-  const sendEvent = () => {
-    socket?.emit("moveCard", {room, cardId: 1, position: "A2" });
-  };
+  // const sendEvent = () => {
+  //   socket?.emit("moveCard", {room, cardId: 1, position: "A2" });
+  // };
 
   const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
     ctx.strokeStyle = 'red';
@@ -103,9 +103,8 @@ export default function Home() {
 
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
-      <h1>Socket.IO Test</h1>
       <p>Status: {connected ? "Connected" : "Disconnected"}</p>
-      <button onClick={sendEvent} style={{ marginBottom: 20 }}>
+      {/* <button onClick={sendEvent} style={{ marginBottom: 20 }}>
         Send moveCard event
       </button>
       <h2>Events received:</h2>
@@ -113,7 +112,7 @@ export default function Home() {
         {events.map((e, i) => (
           <li key={i}>{e}</li>
         ))}
-      </ul>
+      </ul> */}
 
 
       <canvas

@@ -17,10 +17,13 @@ export default function RoomSelect() {
       <h1 className="m-1">Choose a room</h1>
       <input className="m-1" value={room} onChange={e => setRoom(e.target.value)} placeholder="Room name" />
       <button onClick={() => joinRoom()}>Join</button>
-      <label className="m-1" htmlFor="roomInput" onClick={() => joinRoom("room1")}>Room1</label>
-      <label className="m-1" htmlFor="roomInput" onClick={() => joinRoom("room2")}>Room2</label>
-      <label className="m-1" htmlFor="roomInput" onClick={() => joinRoom("room3")}>Room3</label>
-      <label className="m-1" htmlFor="roomInput" onClick={() => joinRoom("room4")}>Room4</label>
+
+      <div className="flex flex-col items-start">
+        <p className="m-1 cursor-pointer" onClick={() => joinRoom("room1")}>Room1</p>
+        <p className="m-1 cursor-pointer" onClick={() => joinRoom("room2")}>Room2</p>
+        <p className="m-1 cursor-pointer" onClick={() => joinRoom("room3")}>Room3</p>
+        <p className="m-1 cursor-pointer" onClick={() => joinRoom("room4")}>Room4</p>
+      </div>
     </div>
   );
 }
