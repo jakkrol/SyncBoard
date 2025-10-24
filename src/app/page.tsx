@@ -23,6 +23,7 @@ export default function RoomSelect() {
         <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room2")}>Room2</p>
         <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room3")}>Room3</p>
         <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room4")}>Room4</p>
+        <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room5")}>Room5</p>
       </div>
     </div>
   );
