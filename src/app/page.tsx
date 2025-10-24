@@ -19,10 +19,10 @@ export default function RoomSelect() {
       <button onClick={() => joinRoom()}>Join</button>
 
       <div className="flex flex-col items-start">
-        <p className="m-1 cursor-pointer" onClick={() => joinRoom("room1")}>Room1</p>
-        <p className="m-1 cursor-pointer" onClick={() => joinRoom("room2")}>Room2</p>
-        <p className="m-1 cursor-pointer" onClick={() => joinRoom("room3")}>Room3</p>
-        <p className="m-1 cursor-pointer" onClick={() => joinRoom("room4")}>Room4</p>
+        <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room1")}>Room1</p>
+        <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room2")}>Room2</p>
+        <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room3")}>Room3</p>
+        <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room4")}>Room4</p>
       </div>
     </div>
   );

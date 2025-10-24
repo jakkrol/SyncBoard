@@ -116,8 +116,8 @@ export default function Home() {
 
 
       <canvas
-        width={800}
-        height={600}
+        width={1400}
+        height={800}
         style={{border: 'solid 1px #fff', background: '#111' }}
         ref={canvasRef}
         onMouseDown={handeMouseDown}
