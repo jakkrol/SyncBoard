@@ -59,7 +59,7 @@ export default function Home() {
   // };
 
   const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
-    ctx.strokeStyle = 'red';
+    
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
@@ -101,9 +101,25 @@ export default function Home() {
     lastPos.current = null;
   }
 
+
+  const handleColorClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const element = e.target as HTMLDivElement;
+    const color = window.getComputedStyle(element).backgroundColor;
+    console.log("Selected color:", color);
+    const ctx = canvasRef.current?.getContext('2d');
+    ctx!.strokeStyle = color;
+  }
+
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
       <p>Status: {connected ? "Connected" : "Disconnected"}</p>
+      <div className="colors">
+      <div className="w-10 h-10 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
+      <div className="w-10 h-10 bg-red-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+      <div className="w-10 h-10 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+      <div className="w-10 h-10 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+      <div className="w-10 h-10 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
+    </div>
       {/* <button onClick={sendEvent} style={{ marginBottom: 20 }}>
         Send moveCard event
       </button>
