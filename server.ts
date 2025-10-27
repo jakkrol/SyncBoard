@@ -31,15 +31,10 @@ app.prepare().then(() => {
       }
     })
 
-
-
     socket.on("saveBoard", ({room, data}: {room: string, data: string}) => {
       boards[room] = data;
       console.log(`Board saved for room ${room}`);
     });
-
-    
-
 
     socket.on("moveCard", (data: any) => {
       console.log(`moveCard received from ${socket.id}:`, data);
