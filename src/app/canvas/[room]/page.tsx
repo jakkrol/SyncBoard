@@ -15,6 +15,8 @@ export default function Home() {
   // const socketRef = useRef<Socket | null>(null);
   const drawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
+  const [strokeWidth, setStrokeWidth] = useState(5);
+  
 
   useEffect(() => {
     const s = io("http://localhost:3000");
@@ -32,6 +34,7 @@ export default function Home() {
 
     const ctx = canvasRef.current?.getContext('2d')!;
     ctx.strokeStyle = 'red';
+    ctx.lineWidth = strokeWidth;
 
     s.on("loadBoard", (data: string) => {
         const img = new Image();
@@ -110,6 +113,14 @@ export default function Home() {
     ctx!.strokeStyle = color;
   }
 
+  const handleStrokeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const size = parseInt(e.target.value, 10);
+    setStrokeWidth(size);
+    const ctx = canvasRef.current?.getContext('2d');
+    ctx!.lineWidth = size;
+  }
+
+  
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
       <p>Status: {connected ? "Connected" : "Disconnected"}</p>
@@ -125,7 +136,8 @@ export default function Home() {
 
 
         <div>
-          <input type="number"></input>
+          <label>Brush size</label>
+          <input type="range" min="1" max="40" value={strokeWidth} onChange={handleStrokeChange}/>
         </div>
       </div>
       {/* <button onClick={sendEvent} style={{ marginBottom: 20 }}>
