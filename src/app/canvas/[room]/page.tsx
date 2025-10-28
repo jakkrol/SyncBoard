@@ -113,12 +113,20 @@ export default function Home() {
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
       <p>Status: {connected ? "Connected" : "Disconnected"}</p>
-      <div className="flex gap-1 mb-1">
-        <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
-        <div className="w-6 h-6 bg-red-500 border rounded cursor-pointer" onClick={handleColorClick}/>
-        <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
-        <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
-        <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
+      <div className="">
+
+        <div className="flex gap-1 mb-1">
+          <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
+          <div className="w-6 h-6 bg-red-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+          <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+          <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+          <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
+        </div>
+
+
+        <div>
+          <input type="number"></input>
+        </div>
       </div>
       {/* <button onClick={sendEvent} style={{ marginBottom: 20 }}>
         Send moveCard event
