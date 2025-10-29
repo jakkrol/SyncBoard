@@ -136,8 +136,8 @@ export default function Home() {
 
 
         <div>
-          <label>Brush size</label>
-          <input type="range" min="1" max="40" value={strokeWidth} onChange={handleStrokeChange}/>
+          <label className="mr-3">Brush size: {strokeWidth}</label>
+          <input type="range" min="1" max="40" maxLength={40} minLength={40} value={strokeWidth} onChange={handleStrokeChange}/>
         </div>
       </div>
       {/* <button onClick={sendEvent} style={{ marginBottom: 20 }}>
