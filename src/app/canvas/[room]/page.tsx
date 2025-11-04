@@ -160,6 +160,9 @@ export default function Home() {
         onMouseMove={handeMouseMove}
         onMouseUp={handeMouseUp}
         onMouseLeave={handeMouseUp}
+
+        // onMouseEnter={handeMouseDown}
+        // onMouseMoveCapture={handeMouseMove}
       />
     </div>
   );
