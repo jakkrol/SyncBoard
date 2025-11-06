@@ -5,6 +5,39 @@ import { userAgent } from "next/server";
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
+class Cursor {
+  id: string;
+  x: number;
+  y: number;
+  color: string;
+  name: string;
+
+  constructor(id: string, color: string, name: string) {
+    this.id = id;
+    this.x = 0;
+    this.y = 0;
+    this.color = color;
+    this.name = name;
+  }
+
+  update(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = "12px sans-serif";
+    ctx.fillText(this.name, this.x + 10, this.y + 4);
+  }
+}
+
+
+
 export default function Home() {
   const [connected, setConnected] = useState(false);
   const [events, setEvents] = useState<string[]>([]);
@@ -12,6 +45,11 @@ export default function Home() {
 
   const {room} = useParams();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
+  const myCursor = useRef<Cursor | null>(null);
+  const otherCursors = useRef<Map<string, Cursor>>(new Map());
+
+
   // const socketRef = useRef<Socket | null>(null);
   const drawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
@@ -31,6 +69,10 @@ export default function Home() {
     // s.on("moveCard", (data) => {
     //   setEvents((prev) => [...prev, JSON.stringify(data)]);
     // });
+
+    const userCursor = new Cursor("0", "red", "User ");
+    myCursor.current = userCursor;
+
 
     const ctx = canvasRef.current?.getContext('2d')!;
     ctx.strokeStyle = 'red';
@@ -120,6 +162,16 @@ export default function Home() {
     ctx!.lineWidth = size;
   }
 
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    const pos = cursorCanvasRef.current!.getBoundingClientRect();
+    const x = e.clientX - pos.left;
+    const y = e.clientY - pos.top;
+
+    myCursor.current?.update(x, y);
+    const ctxs = cursorCanvasRef.current?.getContext("2d");
+    ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
+    myCursor.current?.draw(ctxs!);
+  }
   
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
@@ -151,19 +203,40 @@ export default function Home() {
       </ul> */}
 
 
+    <div style={{ position: "relative", display: "inline-block" }}>
       <canvas
         width={1400}
         height={800}
-        style={{border: 'solid 1px #fff', background: '#111' }}
         ref={canvasRef}
+        style={{
+          border: "solid 1px #fff",
+          background: "#111",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 0,
+        }}
         onMouseDown={handeMouseDown}
         onMouseMove={handeMouseMove}
         onMouseUp={handeMouseUp}
         onMouseLeave={handeMouseUp}
-
-        // onMouseEnter={handeMouseDown}
-        // onMouseMoveCapture={handeMouseMove}
+        onMouseMoveCapture={handleMouseEnter}
       />
+
+      <canvas
+        width={1400}
+        height={800}
+        ref={cursorCanvasRef}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 1,
+          pointerEvents: "none", // ⬅ important
+        }}
+      />
+    </div>
+
     </div>
   );
 }
