@@ -172,6 +172,11 @@ export default function Home() {
     ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
     myCursor.current?.draw(ctxs!);
   }
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    const ctxs = cursorCanvasRef.current?.getContext("2d");
+    ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
+  }
   
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
@@ -203,39 +208,44 @@ export default function Home() {
       </ul> */}
 
 
-    <div style={{ position: "relative", display: "inline-block" }}>
-      <canvas
-        width={1400}
-        height={800}
-        ref={canvasRef}
-        style={{
-          border: "solid 1px #fff",
-          background: "#111",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: 0,
-        }}
-        onMouseDown={handeMouseDown}
-        onMouseMove={handeMouseMove}
-        onMouseUp={handeMouseUp}
-        onMouseLeave={handeMouseUp}
-        onMouseMoveCapture={handleMouseEnter}
-      />
+      <div style={{ position: "relative", display: "inline-block" }}>
+        <canvas
+          width={1400}
+          height={800}
+          ref={canvasRef}
+          style={{
+            border: "solid 1px #fff",
+            background: "#111",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 0,
+          }}
+          onMouseDown={handeMouseDown}
+          onMouseMove={handeMouseMove}
+          onMouseUp={handeMouseUp}
+          onMouseLeave={(e) => {
+            handeMouseUp(e);
+            handleMouseLeave(e);
+          }}
 
-      <canvas
-        width={1400}
-        height={800}
-        ref={cursorCanvasRef}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: 1,
-          pointerEvents: "none", // ⬅ important
-        }}
-      />
-    </div>
+      
+          onMouseMoveCapture={handleMouseEnter}
+        />
+
+        <canvas
+          width={1400}
+          height={800}
+          ref={cursorCanvasRef}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+      </div>
 
     </div>
   );
