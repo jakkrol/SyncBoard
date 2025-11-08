@@ -63,7 +63,7 @@ export default function Home() {
 
     s.on("connect", () => {
         setConnected(true)
-        s.emit("join", room);   
+        s.emit("join", room);  
     });
     s.on("disconnect", () => setConnected(false));
 
@@ -83,6 +83,37 @@ export default function Home() {
         };
         img.src = data; 
     });
+
+    s.on("initializeCursors", (cursors: {id: string, name: string, color: string}[]) => {
+      otherCursors.current.clear();
+      cursors.forEach((c) => {
+        const cursor = new Cursor(c.id, c.color, c.name);
+        otherCursors.current.set(c.id, cursor);
+      });
+      reDrawCursors();
+    });
+
+
+  s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
+    if (id === s.id) {
+      // This is our own cursor info
+      myCursor.current = new Cursor(id, color, name);
+    } else {
+      // Other users
+      otherCursors.current.set(id, new Cursor(id, color, name));
+    }
+    reDrawCursors();
+  });
+
+
+  s.on("drawCursor", ({ id, x, y }: { id: string; x: number; y: number }) => {
+    if (otherCursors.current.has(id)) {
+      const cursor = otherCursors.current.get(id)!;
+      cursor.update(x, y);
+      reDrawCursors();
+    }
+  });
+
 
     s.on("draw", ({ x0, y0, x1, y1 }: { x0: number; y0: number; x1: number; y1: number }) => {
       draw(x0, y0, x1, y1, ctx);
@@ -116,6 +147,8 @@ export default function Home() {
     otherCursors.current.forEach((cursor) => {
       cursor.draw(ctxs!);
     })
+
+    myCursor.current?.draw(ctxs!);
   }
 
   const getPositionMouse = (e: React.MouseEvent) => {
