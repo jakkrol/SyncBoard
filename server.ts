@@ -36,12 +36,6 @@ app.prepare().then(() => {
       console.log(`Board saved for room ${room}`);
     });
 
-    socket.on("moveCard", (data: any) => {
-      console.log(`moveCard received from ${socket.id}:`, data);
-      socket.to(data.room).emit("moveCard", data);
-    });
-
-
     socket.on("draw", (data: any) => {
       //console.log(`draw received from ${socket.id}:`, data);
       //socket.broadcast.emit("draw", data);

@@ -66,9 +66,6 @@ export default function Home() {
         s.emit("join", room);   
     });
     s.on("disconnect", () => setConnected(false));
-    // s.on("moveCard", (data) => {
-    //   setEvents((prev) => [...prev, JSON.stringify(data)]);
-    // });
 
     const userCursor = new Cursor("0", "red", "User ");
     myCursor.current = userCursor;
@@ -112,6 +109,15 @@ export default function Home() {
     ctx.closePath();
   }
 
+  const reDrawCursors = () => {
+    const ctxs = cursorCanvasRef.current?.getContext("2d");
+    ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
+
+    otherCursors.current.forEach((cursor) => {
+      cursor.draw(ctxs!);
+    })
+  }
+
   const getPositionMouse = (e: React.MouseEvent) => {
     const pos = canvasRef.current!.getBoundingClientRect();
     return {
@@ -134,7 +140,6 @@ export default function Home() {
     
     
     draw(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
-    //socketRef.current?.emit("draw", {x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
     socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
     socket?.emit("saveBoard", {room, data: canvasRef.current?.toDataURL()});
     lastPos.current = {x, y};
@@ -162,7 +167,7 @@ export default function Home() {
     ctx!.lineWidth = size;
   }
 
-  const handleMouseEnter = (e: React.MouseEvent) => {
+  const handleCursorMove = (e: React.MouseEvent) => {
     const pos = cursorCanvasRef.current!.getBoundingClientRect();
     const x = e.clientX - pos.left;
     const y = e.clientY - pos.top;
@@ -171,6 +176,8 @@ export default function Home() {
     const ctxs = cursorCanvasRef.current?.getContext("2d");
     ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
     myCursor.current?.draw(ctxs!);
+
+    socket?.emit("drawCursor", { room, id: socket.id, x, y });
   }
 
   const handleMouseLeave = (e: React.MouseEvent) => {
@@ -230,7 +237,7 @@ export default function Home() {
           }}
 
       
-          onMouseMoveCapture={handleMouseEnter}
+          onMouseMoveCapture={handleCursorMove}
         />
 
         <canvas
