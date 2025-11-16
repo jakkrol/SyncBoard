@@ -115,8 +115,12 @@ export default function Home() {
   });
 
 
-    s.on("draw", ({ x0, y0, x1, y1 }: { x0: number; y0: number; x1: number; y1: number }) => {
+    s.on("draw", ({ x0, y0, x1, y1, color, width }: { x0: number; y0: number; x1: number; y1: number, color: string, width: any }) => {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
       draw(x0, y0, x1, y1, ctx);
+      ctx.restore();
     })
 
     return () => {
@@ -132,7 +136,6 @@ export default function Home() {
   // };
 
   const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
-    
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
@@ -149,6 +152,12 @@ export default function Home() {
     })
 
     myCursor.current?.draw(ctxs!);
+
+     // DEBUG: log all cursors
+  console.log("All cursors:", {
+    myCursor: myCursor.current,
+    others: Array.from(otherCursors.current.values())
+  });
   }
 
   const getPositionMouse = (e: React.MouseEvent) => {
@@ -173,7 +182,7 @@ export default function Home() {
     
     
     draw(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
-    socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y});
+    socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y, color: canvasRef.current?.getContext('2d')?.strokeStyle, width: canvasRef.current?.getContext('2d')?.lineWidth});
     socket?.emit("saveBoard", {room, data: canvasRef.current?.toDataURL()});
     lastPos.current = {x, y};
     
@@ -200,18 +209,22 @@ export default function Home() {
     ctx!.lineWidth = size;
   }
 
-  const handleCursorMove = (e: React.MouseEvent) => {
-    const pos = cursorCanvasRef.current!.getBoundingClientRect();
-    const x = e.clientX - pos.left;
-    const y = e.clientY - pos.top;
+const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const pos = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+  const x = e.clientX - pos.left;
+  const y = e.clientY - pos.top;
 
-    myCursor.current?.update(x, y);
-    const ctxs = cursorCanvasRef.current?.getContext("2d");
-    ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
-    myCursor.current?.draw(ctxs!);
+  myCursor.current?.update(x, y);
 
-    socket?.emit("drawCursor", { room, id: socket.id, x, y });
+  const ctxs = cursorCanvasRef.current?.getContext("2d");
+  if (ctxs) {
+    ctxs.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
+    myCursor.current?.draw(ctxs);
   }
+
+  socket?.emit("drawCursor", { room, id: socket?.id, x, y });
+};
+
 
   const handleMouseLeave = (e: React.MouseEvent) => {
     const ctxs = cursorCanvasRef.current?.getContext("2d");
@@ -248,45 +261,41 @@ export default function Home() {
       </ul> */}
 
 
-      <div style={{ position: "relative", display: "inline-block" }}>
-        <canvas
-          width={1400}
-          height={800}
-          ref={canvasRef}
-          style={{
-            border: "solid 1px #fff",
-            background: "#111",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            zIndex: 0,
-          }}
-          onMouseDown={handeMouseDown}
-          onMouseMove={handeMouseMove}
-          onMouseUp={handeMouseUp}
-          onMouseLeave={(e) => {
-            handeMouseUp(e);
-            handleMouseLeave(e);
-          }}
+  <div
+    style={{ position: "relative", display: "inline-block" }}
+    onMouseMove={handleCursorMove}
+    onMouseLeave={handleMouseLeave}
+  >
+    <canvas
+      width={1400}
+      height={800}
+      ref={canvasRef}
+      style={{
+        border: "solid 1px #fff",
+        background: "#111",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        zIndex: 0,
+      }}
+      onMouseDown={handeMouseDown}
+      onMouseMove={handeMouseMove}
+      onMouseUp={handeMouseUp}
+    />
 
-      
-          onMouseMoveCapture={handleCursorMove}
-        />
-
-        <canvas
-          width={1400}
-          height={800}
-          ref={cursorCanvasRef}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            zIndex: 1,
-            pointerEvents: "none",
-          }}
-        />
-      </div>
-
+    <canvas
+      width={1400}
+      height={800}
+      ref={cursorCanvasRef}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        zIndex: 1,
+        pointerEvents: "none",
+      }}
+    />
+  </div>
     </div>
   );
 }
