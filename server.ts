@@ -91,6 +91,12 @@ app.prepare().then(() => {
 
     socket.on("disconnect", () => {
       console.log(`user disconnected: ${socket.id}`);
+      const user = users[socket.id];
+      if(user){
+        socket.to(user.room).emit("userLeft", {id: socket.id});
+        delete users[socket.id];
+      }
+
     });
   });
 

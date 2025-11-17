@@ -123,11 +123,23 @@ export default function Home() {
       ctx.restore();
     })
 
+    s.on("userLeft", ({ id }: { id: string }) => {
+      if (otherCursors.current.has(id)) {
+        otherCursors.current.delete(id);
+        reDrawCursors();
+      }
+    });
+
     return () => {
       s.off("connect");
       s.off("disconnect");
+      s.off("loadBoard");
+      s.off("initializeCursors");
+      s.off("userJoined");
+      s.off("draw");
       // s.off("moveCard");
       s.disconnect();
+      console.log("Socket disconnected");
     };
   }, [room]);
 
