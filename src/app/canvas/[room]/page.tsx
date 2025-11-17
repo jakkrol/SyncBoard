@@ -165,7 +165,6 @@ export default function Home() {
 
     myCursor.current?.draw(ctxs!);
 
-     // DEBUG: log all cursors
   console.log("All cursors:", {
     myCursor: myCursor.current,
     others: Array.from(otherCursors.current.values())
@@ -197,7 +196,6 @@ export default function Home() {
     socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y, color: canvasRef.current?.getContext('2d')?.strokeStyle, width: canvasRef.current?.getContext('2d')?.lineWidth});
     socket?.emit("saveBoard", {room, data: canvasRef.current?.toDataURL()});
     lastPos.current = {x, y};
-    
   }
 
   const handeMouseUp = (e: React.MouseEvent) =>{
