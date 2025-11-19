@@ -103,10 +103,8 @@ export default function Home() {
 
   s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
     if (id === s.id) {
-      // This is our own cursor info
       myCursor.current = new Cursor(id, color, name);
     } else {
-      // Other users
       otherCursors.current.set(id, new Cursor(id, color, name));
     }
     reDrawCursors();
