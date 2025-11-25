@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { userAgent } from "next/server";
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
+import { getSocket } from "../../../lib/socket";
 
 class Cursor {
   id: string;
@@ -57,14 +58,20 @@ export default function Home() {
   
 
   useEffect(() => {
-    const s = io("http://localhost:3000");
-    
+    const s = getSocket();
     setSocket(s);
+    const join = () => {s.emit("join", room);};
+    if(s.connected){
+      join();
+    } else {
+      s.on("connect", join);
+    }
+    //setSocket(s);
 
-    s.on("connect", () => {
-        setConnected(true)
-        s.emit("join", room);  
-    });
+    // s.on("connect", () => {
+    //     setConnected(true)
+    //     s.emit("join", room);  
+    // });
     s.on("disconnect", () => setConnected(false));
 
     const userCursor = new Cursor("0", "red", "User ");
@@ -96,10 +103,8 @@ export default function Home() {
 
   s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
     if (id === s.id) {
-      // This is our own cursor info
       myCursor.current = new Cursor(id, color, name);
     } else {
-      // Other users
       otherCursors.current.set(id, new Cursor(id, color, name));
     }
     reDrawCursors();
@@ -131,15 +136,16 @@ export default function Home() {
     });
 
     return () => {
-      s.off("connect");
+      s.off("join");
+      //s.off("connect");
       s.off("disconnect");
       s.off("loadBoard");
       s.off("initializeCursors");
       s.off("userJoined");
       s.off("draw");
       // s.off("moveCard");
-      s.disconnect();
-      console.log("Socket disconnected");
+      //s.disconnect();
+      //console.log("Socket disconnected");
     };
   }, [room]);
 
@@ -156,8 +162,10 @@ export default function Home() {
   }
 
   const reDrawCursors = () => {
-    const ctxs = cursorCanvasRef.current?.getContext("2d");
-    ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
+    const canvas = cursorCanvasRef.current;
+    const ctxs = canvas?.getContext("2d");
+    if (!canvas || !ctxs) return;
+    ctxs.clearRect(0, 0, canvas.width, canvas.height);
 
     otherCursors.current.forEach((cursor) => {
       cursor.draw(ctxs!);

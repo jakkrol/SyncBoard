@@ -1,10 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getSocket } from "../lib/socket";
+import { get } from "http";
 
 export default function RoomSelect() {
   const [room, setRoom] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    getSocket();
+  }, []);
 
   const joinRoom = (r?: string) => {
     const roomToJoin = r || room;

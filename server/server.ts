@@ -84,7 +84,7 @@ app.prepare().then(() => {
     });
 
     socket.on("draw", (data: any) => {
-      //console.log(`draw received from ${socket.id}:`, data);
+      console.log(`draw received from ${socket.id}:`, data);
       //socket.broadcast.emit("draw", data);
       socket.to(data.room).emit("draw", data);
     });
