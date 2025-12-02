@@ -5,38 +5,8 @@ import { userAgent } from "next/server";
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
-
-class Cursor {
-  id: string;
-  x: number;
-  y: number;
-  color: string;
-  name: string;
-
-  constructor(id: string, color: string, name: string) {
-    this.id = id;
-    this.x = 0;
-    this.y = 0;
-    this.color = color;
-    this.name = name;
-  }
-
-  update(x: number, y: number) {
-    this.x = x;
-    this.y = y;
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 6, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.font = "12px sans-serif";
-    ctx.fillText(this.name, this.x + 10, this.y + 4);
-  }
-}
-
+import { Cursor } from "../../../lib/Cursor";
+import { drawLine } from "../../../lib/tools/drawLine";
 
 
 export default function Home() {
@@ -124,7 +94,7 @@ export default function Home() {
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = width;
-      draw(x0, y0, x1, y1, ctx);
+      drawLine(x0, y0, x1, y1, ctx);
       ctx.restore();
     })
 
@@ -153,13 +123,13 @@ export default function Home() {
   //   socket?.emit("moveCard", {room, cardId: 1, position: "A2" });
   // };
 
-  const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
-    ctx.beginPath();
-    ctx.moveTo(x0, y0);
-    ctx.lineTo(x1, y1);
-    ctx.stroke();
-    ctx.closePath();
-  }
+  // const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
+  //   ctx.beginPath();
+  //   ctx.moveTo(x0, y0);
+  //   ctx.lineTo(x1, y1);
+  //   ctx.stroke();
+  //   ctx.closePath();
+  // }
 
   const reDrawCursors = () => {
     const canvas = cursorCanvasRef.current;
@@ -200,7 +170,7 @@ export default function Home() {
     const ctx = canvasRef.current?.getContext('2d');
     
     
-    draw(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
+    drawLine(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
     socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y, color: canvasRef.current?.getContext('2d')?.strokeStyle, width: canvasRef.current?.getContext('2d')?.lineWidth});
     socket?.emit("saveBoard", {room, data: canvasRef.current?.toDataURL()});
     lastPos.current = {x, y};
