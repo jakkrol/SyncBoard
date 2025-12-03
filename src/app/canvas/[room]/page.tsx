@@ -7,6 +7,7 @@ import { io, Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
 import { Cursor } from "../../../lib/Cursor";
 import { drawLine } from "../../../lib/tools/drawLine";
+import { onLoadBoard } from "../../../lib/socketHandlers/onLoadBoard";
 
 
 export default function Home() {
@@ -52,14 +53,16 @@ export default function Home() {
     ctx.strokeStyle = 'red';
     ctx.lineWidth = strokeWidth;
 
-    s.on("loadBoard", (data: string) => {
-        const img = new Image();
-        img.onload = () => {
-          ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
-          ctx.drawImage(img, 0, 0);
-        };
-        img.src = data; 
-    });
+    //test if Im smart enough xd
+    onLoadBoard(ctx, canvasRef, s);
+    // s.on("loadBoard", (data: string) => {
+    //     const img = new Image();
+    //     img.onload = () => {
+    //       ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+    //       ctx.drawImage(img, 0, 0);
+    //     };
+    //     img.src = data; 
+    // });
 
     s.on("initializeCursors", (cursors: {id: string, name: string, color: string}[]) => {
       otherCursors.current.clear();
