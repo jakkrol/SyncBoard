@@ -8,6 +8,9 @@ import { getSocket } from "../../../lib/socket";
 import { Cursor } from "../../../lib/Cursor";
 import { drawLine } from "../../../lib/tools/drawLine";
 import { onLoadBoard } from "../../../lib/socketHandlers/onLoadBoard";
+import { reDrawCursors } from "../../../lib/tools/reDrawCursors";
+import { onInitCursors } from "../../../lib/socketHandlers/onInitCursors";
+import { init } from "next/dist/compiled/webpack/webpack";
 
 
 export default function Home() {
@@ -64,14 +67,15 @@ export default function Home() {
     //     img.src = data; 
     // });
 
-    s.on("initializeCursors", (cursors: {id: string, name: string, color: string}[]) => {
-      otherCursors.current.clear();
-      cursors.forEach((c) => {
-        const cursor = new Cursor(c.id, c.color, c.name);
-        otherCursors.current.set(c.id, cursor);
-      });
-      reDrawCursors();
-    });
+    onInitCursors(s, otherCursors, () => reDrawCursors(cursorCanvasRef, otherCursors, myCursor));
+    // s.on("initializeCursors", (cursors: {id: string, name: string, color: string}[]) => {
+    //   otherCursors.current.clear();
+    //   cursors.forEach((c) => {
+    //     const cursor = new Cursor(c.id, c.color, c.name);
+    //     otherCursors.current.set(c.id, cursor);
+    //   });
+    //   reDrawCursors();
+    // });
 
 
   s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
@@ -80,7 +84,7 @@ export default function Home() {
     } else {
       otherCursors.current.set(id, new Cursor(id, color, name));
     }
-    reDrawCursors();
+    reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
   });
 
 
@@ -88,7 +92,7 @@ export default function Home() {
     if (otherCursors.current.has(id)) {
       const cursor = otherCursors.current.get(id)!;
       cursor.update(x, y);
-      reDrawCursors();
+      reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
     }
   });
 
@@ -104,7 +108,7 @@ export default function Home() {
     s.on("userLeft", ({ id }: { id: string }) => {
       if (otherCursors.current.has(id)) {
         otherCursors.current.delete(id);
-        reDrawCursors();
+        reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
       }
     });
 
@@ -134,23 +138,23 @@ export default function Home() {
   //   ctx.closePath();
   // }
 
-  const reDrawCursors = () => {
-    const canvas = cursorCanvasRef.current;
-    const ctxs = canvas?.getContext("2d");
-    if (!canvas || !ctxs) return;
-    ctxs.clearRect(0, 0, canvas.width, canvas.height);
+  // const reDrawCursors = () => {
+  //   const canvas = cursorCanvasRef.current;
+  //   const ctxs = canvas?.getContext("2d");
+  //   if (!canvas || !ctxs) return;
+  //   ctxs.clearRect(0, 0, canvas.width, canvas.height);
 
-    otherCursors.current.forEach((cursor) => {
-      cursor.draw(ctxs!);
-    })
+  //   otherCursors.current.forEach((cursor) => {
+  //     cursor.draw(ctxs!);
+  //   })
 
-    myCursor.current?.draw(ctxs!);
+  //   myCursor.current?.draw(ctxs!);
 
-  console.log("All cursors:", {
-    myCursor: myCursor.current,
-    others: Array.from(otherCursors.current.values())
-  });
-  }
+  // console.log("All cursors:", {
+  //   myCursor: myCursor.current,
+  //   others: Array.from(otherCursors.current.values())
+  // });
+  // }
 
   const getPositionMouse = (e: React.MouseEvent) => {
     const pos = canvasRef.current!.getBoundingClientRect();
