@@ -79,7 +79,11 @@ app.prepare().then(() => {
 
     socket.on("drawCursor", (data: any) => {
       const user = users[socket.id];
-      //socket.to(data.room).emit("drawCursor", data);
+      
+      if (!user) {
+        return; 
+      }
+      
       socket.to(data.room).emit("drawCursor", { id: socket.id, x: data.x, y: data.y, name: user.name, color: user.color });
     });
 
@@ -88,6 +92,21 @@ app.prepare().then(() => {
       //socket.broadcast.emit("draw", data);
       socket.to(data.room).emit("draw", data);
     });
+
+    socket.on("leave", (room: any) => {
+      const user = users[socket.id];
+      if (!user) return;
+
+      if (user.room === room) {
+        console.log(`socket ${socket.id} left room ${room}`);
+
+        socket.to(room).emit("userLeft", { id: socket.id });
+        socket.leave(room);
+
+        delete users[socket.id];
+      }
+    });
+
 
     socket.on("disconnect", () => {
       console.log(`user disconnected: ${socket.id}`);

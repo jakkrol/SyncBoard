@@ -10,7 +10,9 @@ import { drawLine } from "../../../lib/tools/drawLine";
 import { onLoadBoard } from "../../../lib/socketHandlers/onLoadBoard";
 import { reDrawCursors } from "../../../lib/tools/reDrawCursors";
 import { onInitCursors } from "../../../lib/socketHandlers/onInitCursors";
+import { onUserJoined } from "@/lib/socketHandlers/onUserJoined";
 import { init } from "next/dist/compiled/webpack/webpack";
+import { on } from "events";
 
 
 export default function Home() {
@@ -34,25 +36,30 @@ export default function Home() {
   useEffect(() => {
     const s = getSocket();
     setSocket(s);
-    const join = () => {s.emit("join", room);};
-    if(s.connected){
-      join();
-    } else {
-      s.on("connect", join);
-    }
+    const handleConnect = () => {
+      s.emit("join", room); 
+      setConnected(true);
+    };
+ 
+    s.off("connect", handleConnect);
+    s.on("connect", handleConnect);
+
+    if(s.connected) handleConnect();
     //setSocket(s);
 
     // s.on("connect", () => {
     //     setConnected(true)
     //     s.emit("join", room);  
     // });
-    s.on("disconnect", () => setConnected(false));
+    const handleDisconnect = () => setConnected(false);
+    s.off("disconnect", handleDisconnect);
+    s.on("disconnect", handleDisconnect);
 
     const userCursor = new Cursor("0", "red", "User ");
     myCursor.current = userCursor;
 
 
-    const ctx = canvasRef.current?.getContext('2d')!;
+    const ctx = canvasRef.current!.getContext('2d')!;
     ctx.strokeStyle = 'red';
     ctx.lineWidth = strokeWidth;
 
@@ -78,6 +85,8 @@ export default function Home() {
     // });
 
 
+    //onUserJoined(s, myCursor, otherCursors, () => reDrawCursors(cursorCanvasRef, otherCursors, myCursor));
+    
   s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
     if (id === s.id) {
       myCursor.current = new Cursor(id, color, name);
@@ -97,7 +106,7 @@ export default function Home() {
   });
 
 
-    s.on("draw", ({ x0, y0, x1, y1, color, width }: { x0: number; y0: number; x1: number; y1: number, color: string, width: any }) => {
+    s.on("draw", ({ x0, y0, x1, y1, color, width }: { x0: number; y0: number; x1: number; y1: number, color: string, width: number }) => {
       ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = width;
@@ -113,13 +122,16 @@ export default function Home() {
     });
 
     return () => {
-      s.off("join");
-      //s.off("connect");
+      s.emit("leave", room);
+      //s.off("join");
+      s.off("connect");
       s.off("disconnect");
       s.off("loadBoard");
       s.off("initializeCursors");
       s.off("userJoined");
       s.off("draw");
+      s.off("drawCursor");
+      s.off("userLeft");
       // s.off("moveCard");
       //s.disconnect();
       //console.log("Socket disconnected");
@@ -174,12 +186,12 @@ export default function Home() {
   const handeMouseMove = (e: React.MouseEvent) =>{
     if(!drawing.current) return;
     const {x, y} = getPositionMouse(e);
-    const ctx = canvasRef.current?.getContext('2d');
+    const ctx = canvasRef.current!.getContext('2d');
     
     
     drawLine(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
-    socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y, color: canvasRef.current?.getContext('2d')?.strokeStyle, width: canvasRef.current?.getContext('2d')?.lineWidth});
-    socket?.emit("saveBoard", {room, data: canvasRef.current?.toDataURL()});
+    socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y, color: canvasRef.current!.getContext('2d')?.strokeStyle, width: canvasRef.current!.getContext('2d')?.lineWidth});
+    socket?.emit("saveBoard", {room, data: canvasRef.current!.toDataURL()});
     lastPos.current = {x, y};
   }
 
@@ -193,14 +205,14 @@ export default function Home() {
     const element = e.target as HTMLDivElement;
     const color = window.getComputedStyle(element).backgroundColor;
     console.log("Selected color:", color);
-    const ctx = canvasRef.current?.getContext('2d');
+    const ctx = canvasRef.current!.getContext('2d');
     ctx!.strokeStyle = color;
   }
 
   const handleStrokeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const size = parseInt(e.target.value, 10);
     setStrokeWidth(size);
-    const ctx = canvasRef.current?.getContext('2d');
+    const ctx = canvasRef.current!.getContext('2d');
     ctx!.lineWidth = size;
   }
 
@@ -211,7 +223,7 @@ const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
 
   myCursor.current?.update(x, y);
 
-  const ctxs = cursorCanvasRef.current?.getContext("2d");
+  const ctxs = cursorCanvasRef.current!.getContext("2d");
   if (ctxs) {
     ctxs.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
     myCursor.current?.draw(ctxs);
@@ -222,7 +234,7 @@ const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
 
 
   const handleMouseLeave = (e: React.MouseEvent) => {
-    const ctxs = cursorCanvasRef.current?.getContext("2d");
+    const ctxs = cursorCanvasRef.current!.getContext("2d");
     ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
   }
   
