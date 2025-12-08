@@ -85,16 +85,16 @@ export default function Home() {
     // });
 
 
-    //onUserJoined(s, myCursor, otherCursors, () => reDrawCursors(cursorCanvasRef, otherCursors, myCursor));
+    onUserJoined(s, myCursor, otherCursors, () => reDrawCursors(cursorCanvasRef, otherCursors, myCursor));
     
-  s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
-    if (id === s.id) {
-      myCursor.current = new Cursor(id, color, name);
-    } else {
-      otherCursors.current.set(id, new Cursor(id, color, name));
-    }
-    reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
-  });
+  // s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
+  //   if (id === s.id) {
+  //     myCursor.current = new Cursor(id, color, name);
+  //   } else {
+  //     otherCursors.current.set(id, new Cursor(id, color, name));
+  //   }
+  //   reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
+  // });
 
 
   s.on("drawCursor", ({ id, x, y }: { id: string; x: number; y: number }) => {
