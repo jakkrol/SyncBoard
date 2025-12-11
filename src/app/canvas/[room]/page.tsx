@@ -11,6 +11,8 @@ import { onLoadBoard } from "../../../lib/socketHandlers/onLoadBoard";
 import { reDrawCursors } from "../../../lib/tools/reDrawCursors";
 import { onInitCursors } from "../../../lib/socketHandlers/onInitCursors";
 import { onUserJoined } from "@/lib/socketHandlers/onUserJoined";
+import { onDrawCursors } from "@/lib/socketHandlers/onDrawCursors";
+import { onDraw } from "@/lib/socketHandlers/onDraw";
 import { init } from "next/dist/compiled/webpack/webpack";
 import { on } from "events";
 
@@ -74,7 +76,7 @@ export default function Home() {
     //     img.src = data; 
     // });
 
-    onInitCursors(s, otherCursors, () => reDrawCursors(cursorCanvasRef, otherCursors, myCursor));
+    onInitCursors(s, otherCursors, cursorCanvasRef, myCursor);
     // s.on("initializeCursors", (cursors: {id: string, name: string, color: string}[]) => {
     //   otherCursors.current.clear();
     //   cursors.forEach((c) => {
@@ -85,7 +87,7 @@ export default function Home() {
     // });
 
 
-    onUserJoined(s, myCursor, otherCursors, () => reDrawCursors(cursorCanvasRef, otherCursors, myCursor));
+    onUserJoined(s, myCursor, cursorCanvasRef, otherCursors);
     
   // s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
   //   if (id === s.id) {
@@ -97,22 +99,23 @@ export default function Home() {
   // });
 
 
-  s.on("drawCursor", ({ id, x, y }: { id: string; x: number; y: number }) => {
-    if (otherCursors.current.has(id)) {
-      const cursor = otherCursors.current.get(id)!;
-      cursor.update(x, y);
-      reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
-    }
-  });
+  onDrawCursors(otherCursors, s, cursorCanvasRef,  myCursor);
+  // s.on("drawCursor", ({ id, x, y }: { id: string; x: number; y: number }) => {
+  //   if (otherCursors.current.has(id)) {
+  //     const cursor = otherCursors.current.get(id)!;
+  //     cursor.update(x, y);
+  //     reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
+  //   }
+  // });
 
-
-    s.on("draw", ({ x0, y0, x1, y1, color, width }: { x0: number; y0: number; x1: number; y1: number, color: string, width: number }) => {
-      ctx.save();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = width;
-      drawLine(x0, y0, x1, y1, ctx);
-      ctx.restore();
-    })
+    onDraw(ctx, s);
+    // s.on("draw", ({ x0, y0, x1, y1, color, width }: { x0: number; y0: number; x1: number; y1: number, color: string, width: number }) => {
+    //   ctx.save();
+    //   ctx.strokeStyle = color;
+    //   ctx.lineWidth = width;
+    //   drawLine(x0, y0, x1, y1, ctx);
+    //   ctx.restore();
+    // })
 
     s.on("userLeft", ({ id }: { id: string }) => {
       if (otherCursors.current.has(id)) {
@@ -138,36 +141,7 @@ export default function Home() {
     };
   }, [room]);
 
-  // const sendEvent = () => {
-  //   socket?.emit("moveCard", {room, cardId: 1, position: "A2" });
-  // };
-
-  // const draw = (x0: number, y0: number, x1: number, y1: number, ctx: CanvasRenderingContext2D) => {
-  //   ctx.beginPath();
-  //   ctx.moveTo(x0, y0);
-  //   ctx.lineTo(x1, y1);
-  //   ctx.stroke();
-  //   ctx.closePath();
-  // }
-
-  // const reDrawCursors = () => {
-  //   const canvas = cursorCanvasRef.current;
-  //   const ctxs = canvas?.getContext("2d");
-  //   if (!canvas || !ctxs) return;
-  //   ctxs.clearRect(0, 0, canvas.width, canvas.height);
-
-  //   otherCursors.current.forEach((cursor) => {
-  //     cursor.draw(ctxs!);
-  //   })
-
-  //   myCursor.current?.draw(ctxs!);
-
-  // console.log("All cursors:", {
-  //   myCursor: myCursor.current,
-  //   others: Array.from(otherCursors.current.values())
-  // });
-  // }
-
+  
   const getPositionMouse = (e: React.MouseEvent) => {
     const pos = canvasRef.current!.getBoundingClientRect();
     return {
@@ -257,17 +231,6 @@ const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
           <input type="range" min="1" max="40" maxLength={40} minLength={40} value={strokeWidth} onChange={handleStrokeChange}/>
         </div>
       </div>
-      {/* <button onClick={sendEvent} style={{ marginBottom: 20 }}>
-        Send moveCard event
-      </button>
-      <h2>Events received:</h2>
-      <ul>
-        {events.map((e, i) => (
-          <li key={i}>{e}</li>
-        ))}
-      </ul> */}
-
-
   <div
     style={{ position: "relative", display: "inline-block" }}
     onMouseMove={handleCursorMove}
