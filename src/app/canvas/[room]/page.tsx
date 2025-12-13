@@ -13,26 +13,28 @@ import { onInitCursors } from "../../../lib/socketHandlers/onInitCursors";
 import { onUserJoined } from "@/lib/socketHandlers/onUserJoined";
 import { onDrawCursors } from "@/lib/socketHandlers/onDrawCursors";
 import { onDraw } from "@/lib/socketHandlers/onDraw";
+import { onUserLeft } from "@/lib/socketHandlers/onUserLeft";
 import { init } from "next/dist/compiled/webpack/webpack";
 import { on } from "events";
+import BoardCanvas from "@/components/Board/boardCanvas";
 
 
 export default function Home() {
   const [connected, setConnected] = useState(false);
-  const [events, setEvents] = useState<string[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
-
   const {room} = useParams();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  //const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
   const myCursor = useRef<Cursor | null>(null);
   const otherCursors = useRef<Map<string, Cursor>>(new Map());
 
 
   // const socketRef = useRef<Socket | null>(null);
-  const drawing = useRef(false);
-  const lastPos = useRef<{ x: number; y: number } | null>(null);
+  // const drawing = useRef(false);
+  // const lastPos = useRef<{ x: number; y: number } | null>(null);
   const [strokeWidth, setStrokeWidth] = useState(5);
+  const [strokeColor, setStrokeColor] = useState("red");
   
 
   useEffect(() => {
@@ -61,12 +63,12 @@ export default function Home() {
     myCursor.current = userCursor;
 
 
-    const ctx = canvasRef.current!.getContext('2d')!;
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = strokeWidth;
+    // const ctx = canvasRef.current!.getContext('2d')!;
+    // ctx.strokeStyle = 'red';
+    // ctx.lineWidth = strokeWidth;
 
     //test if Im smart enough xd
-    onLoadBoard(ctx, canvasRef, s);
+    //onLoadBoard(ctx, canvasRef, s);
     // s.on("loadBoard", (data: string) => {
     //     const img = new Image();
     //     img.onload = () => {
@@ -108,7 +110,7 @@ export default function Home() {
   //   }
   // });
 
-    onDraw(ctx, s);
+ // onDraw(ctx, s);
     // s.on("draw", ({ x0, y0, x1, y1, color, width }: { x0: number; y0: number; x1: number; y1: number, color: string, width: number }) => {
     //   ctx.save();
     //   ctx.strokeStyle = color;
@@ -117,12 +119,13 @@ export default function Home() {
     //   ctx.restore();
     // })
 
-    s.on("userLeft", ({ id }: { id: string }) => {
-      if (otherCursors.current.has(id)) {
-        otherCursors.current.delete(id);
-        reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
-      }
-    });
+  onUserLeft(s, cursorCanvasRef, otherCursors, myCursor);
+    // s.on("userLeft", ({ id }: { id: string }) => {
+    //   if (otherCursors.current.has(id)) {
+    //     otherCursors.current.delete(id);
+    //     reDrawCursors(cursorCanvasRef, otherCursors, myCursor);
+    //   }
+    // });
 
     return () => {
       s.emit("leave", room);
@@ -142,52 +145,54 @@ export default function Home() {
   }, [room]);
 
   
-  const getPositionMouse = (e: React.MouseEvent) => {
-    const pos = canvasRef.current!.getBoundingClientRect();
-    return {
-      x: e.clientX - pos.left,
-      y: e.clientY - pos.top
-    };
-  }
+  // const getPositionMouse = (e: React.MouseEvent) => {
+  //   const pos = canvasRef.current!.getBoundingClientRect();
+  //   return {
+  //     x: e.clientX - pos.left,
+  //     y: e.clientY - pos.top
+  //   };
+  // }
 
-  const handeMouseDown = (e: React.MouseEvent) =>{
-    drawing.current = true;
-    const {x, y} = getPositionMouse(e);
-    lastPos.current = {x, y};
+  // const handeMouseDown = (e: React.MouseEvent) =>{
+  //   drawing.current = true;
+  //   const {x, y} = getPositionMouse(e);
+  //   lastPos.current = {x, y};
 
-  };
+  // };
 
-  const handeMouseMove = (e: React.MouseEvent) =>{
-    if(!drawing.current) return;
-    const {x, y} = getPositionMouse(e);
-    const ctx = canvasRef.current!.getContext('2d');
+  // const handeMouseMove = (e: React.MouseEvent) =>{
+  //   if(!drawing.current) return;
+  //   const {x, y} = getPositionMouse(e);
+  //   const ctx = canvasRef.current!.getContext('2d');
     
     
-    drawLine(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
-    socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y, color: canvasRef.current!.getContext('2d')?.strokeStyle, width: canvasRef.current!.getContext('2d')?.lineWidth});
-    socket?.emit("saveBoard", {room, data: canvasRef.current!.toDataURL()});
-    lastPos.current = {x, y};
-  }
+  //   drawLine(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
+  //   socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y, color: canvasRef.current!.getContext('2d')?.strokeStyle, width: canvasRef.current!.getContext('2d')?.lineWidth});
+  //   socket?.emit("saveBoard", {room, data: canvasRef.current!.toDataURL()});
+  //   lastPos.current = {x, y};
+  // }
 
-  const handeMouseUp = (e: React.MouseEvent) =>{
-    drawing.current = false;
-    lastPos.current = null;
-  }
+  // const handeMouseUp = (e: React.MouseEvent) =>{
+  //   drawing.current = false;
+  //   lastPos.current = null;
+  // }
 
 
   const handleColorClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const element = e.target as HTMLDivElement;
     const color = window.getComputedStyle(element).backgroundColor;
     console.log("Selected color:", color);
-    const ctx = canvasRef.current!.getContext('2d');
-    ctx!.strokeStyle = color;
+    // const ctx = canvasRef.current!.getContext('2d');
+    // ctx!.strokeStyle = color;
+    setStrokeColor(color);
   }
 
   const handleStrokeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const size = parseInt(e.target.value, 10);
     setStrokeWidth(size);
-    const ctx = canvasRef.current!.getContext('2d');
-    ctx!.lineWidth = size;
+    // const ctx = canvasRef.current!.getContext('2d');
+    // ctx!.lineWidth = size;
+    setStrokeWidth(size);
   }
 
 const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -236,7 +241,7 @@ const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
     onMouseMove={handleCursorMove}
     onMouseLeave={handleMouseLeave}
   >
-    <canvas
+    {/* <canvas
       width={1400}
       height={800}
       ref={canvasRef}
@@ -251,7 +256,13 @@ const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
       onMouseDown={handeMouseDown}
       onMouseMove={handeMouseMove}
       onMouseUp={handeMouseUp}
-    />
+    /> */}
+    <BoardCanvas 
+            socket={socket} 
+            room={room as string} 
+            strokeWidth={strokeWidth}
+            strokeColor={strokeColor}
+        />
 
     <canvas
       width={1400}
