@@ -70,6 +70,7 @@ const getPositionMouse = (e: React.MouseEvent) => {
             onMouseDown={(e) => handleMouseDown(e, drawing, lastPos, getPositionMouse)}
             onMouseMove={(e) => handleMouseMove(e, canvasRef, drawing, lastPos, getPositionMouse, socket, room)} 
             onMouseUp={(e) => handleMouseUp(drawing, lastPos)}
+            onMouseLeave={(e) => handleMouseUp(drawing, lastPos)}
         />
     );
 }

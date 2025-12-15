@@ -79,7 +79,7 @@ app.prepare().then(() => {
 
     socket.on("drawCursor", (data: any) => {
       const user = users[socket.id];
-      
+      console.log(`drawCursor received from ${socket.id}:`, data);
       if (!user) {
         return; 
       }

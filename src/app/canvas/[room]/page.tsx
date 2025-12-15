@@ -1,22 +1,15 @@
 "use client";
-import { get } from "http";
 import { useParams } from "next/navigation";
-import { userAgent } from "next/server";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import { io, Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
 import { Cursor } from "../../../lib/Cursor";
-import { drawLine } from "../../../lib/tools/drawLine";
-import { onLoadBoard } from "../../../lib/socketHandlers/onLoadBoard";
-import { reDrawCursors } from "../../../lib/tools/reDrawCursors";
 import { onInitCursors } from "../../../lib/socketHandlers/onInitCursors";
 import { onUserJoined } from "@/lib/socketHandlers/onUserJoined";
 import { onDrawCursors } from "@/lib/socketHandlers/onDrawCursors";
-import { onDraw } from "@/lib/socketHandlers/onDraw";
 import { onUserLeft } from "@/lib/socketHandlers/onUserLeft";
-import { init } from "next/dist/compiled/webpack/webpack";
-import { on } from "events";
 import BoardCanvas from "@/components/Board/boardCanvas";
+import CursorOverlay, { CursorOverlayRef } from "@/components/Board/cursorCanvas";
 
 
 export default function Home() {
@@ -24,10 +17,11 @@ export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const {room} = useParams();
 
-  //const canvasRef = useRef<HTMLCanvasElement>(null);
-  const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
-  const myCursor = useRef<Cursor | null>(null);
-  const otherCursors = useRef<Map<string, Cursor>>(new Map());
+  // //const canvasRef = useRef<HTMLCanvasElement>(null);
+  // const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
+  // const myCursor = useRef<Cursor | null>(null);
+  // const otherCursors = useRef<Map<string, Cursor>>(new Map());
+  const cursorRef = useRef<CursorOverlayRef>(null);
 
 
   // const socketRef = useRef<Socket | null>(null);
@@ -59,8 +53,8 @@ export default function Home() {
     s.off("disconnect", handleDisconnect);
     s.on("disconnect", handleDisconnect);
 
-    const userCursor = new Cursor("0", "red", "User ");
-    myCursor.current = userCursor;
+    // const userCursor = new Cursor("0", "red", "User ");
+    // myCursor.current = userCursor;
 
 
     // const ctx = canvasRef.current!.getContext('2d')!;
@@ -78,7 +72,7 @@ export default function Home() {
     //     img.src = data; 
     // });
 
-    onInitCursors(s, otherCursors, cursorCanvasRef, myCursor);
+    //onInitCursors(s, otherCursors, cursorCanvasRef, myCursor);
     // s.on("initializeCursors", (cursors: {id: string, name: string, color: string}[]) => {
     //   otherCursors.current.clear();
     //   cursors.forEach((c) => {
@@ -89,7 +83,7 @@ export default function Home() {
     // });
 
 
-    onUserJoined(s, myCursor, cursorCanvasRef, otherCursors);
+    //onUserJoined(s, myCursor, cursorCanvasRef, otherCursors);
     
   // s.on("userJoined", ({ id, name, color }: { id: string; name: string; color: string }) => {
   //   if (id === s.id) {
@@ -101,7 +95,7 @@ export default function Home() {
   // });
 
 
-  onDrawCursors(otherCursors, s, cursorCanvasRef,  myCursor);
+  //onDrawCursors(otherCursors, s, cursorCanvasRef,  myCursor);
   // s.on("drawCursor", ({ id, x, y }: { id: string; x: number; y: number }) => {
   //   if (otherCursors.current.has(id)) {
   //     const cursor = otherCursors.current.get(id)!;
@@ -119,7 +113,7 @@ export default function Home() {
     //   ctx.restore();
     // })
 
-  onUserLeft(s, cursorCanvasRef, otherCursors, myCursor);
+  //onUserLeft(s, cursorCanvasRef, otherCursors, myCursor);
     // s.on("userLeft", ({ id }: { id: string }) => {
     //   if (otherCursors.current.has(id)) {
     //     otherCursors.current.delete(id);
@@ -144,7 +138,18 @@ export default function Home() {
     };
   }, [room]);
 
-  
+  const handleContainerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const pos = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+    const x = e.clientX - pos.left;
+    const y = e.clientY - pos.top;
+
+    cursorRef.current?.moveMyCursor(x, y);
+  }
+  const handleContainerMoveLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    cursorRef.current?.clear();
+  }
+
+
   // const getPositionMouse = (e: React.MouseEvent) => {
   //   const pos = canvasRef.current!.getBoundingClientRect();
   //   return {
@@ -195,27 +200,27 @@ export default function Home() {
     setStrokeWidth(size);
   }
 
-const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
-  const pos = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-  const x = e.clientX - pos.left;
-  const y = e.clientY - pos.top;
+// const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
+//   const pos = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+//   const x = e.clientX - pos.left;
+//   const y = e.clientY - pos.top;
 
-  myCursor.current?.update(x, y);
+//   myCursor.current?.update(x, y);
 
-  const ctxs = cursorCanvasRef.current!.getContext("2d");
-  if (ctxs) {
-    ctxs.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
-    myCursor.current?.draw(ctxs);
-  }
+//   const ctxs = cursorCanvasRef.current!.getContext("2d");
+//   if (ctxs) {
+//     ctxs.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
+//     myCursor.current?.draw(ctxs);
+//   }
 
-  socket?.emit("drawCursor", { room, id: socket?.id, x, y });
-};
+//   socket?.emit("drawCursor", { room, id: socket?.id, x, y });
+// };
 
 
-  const handleMouseLeave = (e: React.MouseEvent) => {
-    const ctxs = cursorCanvasRef.current!.getContext("2d");
-    ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
-  }
+  // const handleMouseLeave = (e: React.MouseEvent) => {
+  //   const ctxs = cursorCanvasRef.current!.getContext("2d");
+  //   ctxs!.clearRect(0, 0, cursorCanvasRef.current!.width, cursorCanvasRef.current!.height);
+  // }
   
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
@@ -238,8 +243,8 @@ const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
       </div>
   <div
     style={{ position: "relative", display: "inline-block" }}
-    onMouseMove={handleCursorMove}
-    onMouseLeave={handleMouseLeave}
+    onMouseMove={handleContainerMouseMove}
+    onMouseLeave={handleContainerMoveLeave}
   >
     {/* <canvas
       width={1400}
@@ -264,18 +269,11 @@ const handleCursorMove = (e: React.MouseEvent<HTMLDivElement>) => {
             strokeColor={strokeColor}
         />
 
-    <canvas
-      width={1400}
-      height={800}
-      ref={cursorCanvasRef}
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        zIndex: 1,
-        pointerEvents: "none",
-      }}
-    />
+    <CursorOverlay 
+          ref={cursorRef} 
+          socket={socket} 
+          room={room as string}
+        />
   </div>
     </div>
   );
