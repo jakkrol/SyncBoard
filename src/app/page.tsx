@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSocket } from "../lib/socket";
-import { get } from "http";
 
 export default function RoomSelect() {
   const [room, setRoom] = useState("");
@@ -18,6 +17,12 @@ export default function RoomSelect() {
     router.push(`/canvas/${roomToJoin}`);
   };
 
+  const joinScribleRoom = (r?: string) => {
+    const roomToJoin = r || room;
+    if (!roomToJoin) return;
+    router.push(`/scrible/${roomToJoin}`);
+  }
+
   return (
     <div>
       <h1 className="m-1">Choose a room</h1>
@@ -25,6 +30,8 @@ export default function RoomSelect() {
       <button onClick={() => joinRoom()}>Join</button>
 
       <div className="flex flex-col items-start">
+        <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinScribleRoom("scribleRoom1")}>Scribble Room</p>
+
         <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room1")}>Room1</p>
         <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room2")}>Room2</p>
         <p className="m-2 font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" onClick={() => joinRoom("room3")}>Room3</p>
