@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import { useEffect, useState, useRef, use } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
 import BoardCanvas from "@/components/Board/boardCanvas";
