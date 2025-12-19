@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
-import BoardCanvas from "@/components/Board/boardCanvas";
+import BoardCanvas from "@/components/Board/BoardCanvas";
 
 export default function Home() {
     const [connected, setConnected] = useState(false);

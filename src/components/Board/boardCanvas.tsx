@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
-import { drawLine } from "@/lib/tools/drawLine";
 import { onDraw } from "@/lib/socketHandlers/onDraw";
 import { onLoadBoard } from "@/lib/socketHandlers/onLoadBoard";
 import { handleMouseDown } from "@/lib/boardHandlers.ts/handleMouseDown";
@@ -25,7 +24,6 @@ useEffect(() => {
     if (!socket || !canvasRef.current) return;
     const ctx = canvasRef.current.getContext("2d")!;
 
-    // Listen for events from server
     onLoadBoard(ctx, canvasRef, socket);
     onDraw(ctx, socket);
 
@@ -40,7 +38,6 @@ useEffect(() => {
     const ctx = canvasRef.current.getContext('2d')!;
     ctx.lineWidth = strokeWidth;
     ctx.strokeStyle = strokeColor;
-    // Set line cap/join for smoother drawing
     ctx.lineCap = "round"; 
     ctx.lineJoin = "round";
 },[strokeWidth, strokeColor]);

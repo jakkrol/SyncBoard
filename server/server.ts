@@ -22,6 +22,8 @@ app.prepare().then(() => {
   const boards: { [room: string]: string } = {};
   const users: { [socketId: string]: { room: string; name: string; color: string } } = {};
 
+  const scribbleRooms: {[room: string]: { room: string; drawingUser: string; currentWord: string }} = {};
+
 
 //   const bots: { [botId: string]: { room: string, name: string, color: string } } = {
 //   bot1: { room: "room1", name: "Bot", color: "cyan" },
@@ -43,6 +45,7 @@ app.prepare().then(() => {
 
   io.on("connection", (socket: any) => {
     console.log(`a user connected: ${socket.id}`);
+
     socket.on("join", (room: string) => {
       socket.join(room);
       console.log(`socket ${socket.id} joined room ${room}`);
@@ -67,10 +70,8 @@ app.prepare().then(() => {
 //   .forEach(([botId, bot]) => {
 //     socket.emit("userJoined", { id: botId, name: bot.name, color: bot.color });
 //   });
-
-
-
     })
+
 
     socket.on("saveBoard", ({room, data}: {room: string, data: string}) => {
       boards[room] = data;
@@ -107,7 +108,6 @@ app.prepare().then(() => {
       }
     });
 
-
     socket.on("disconnect", () => {
       console.log(`user disconnected: ${socket.id}`);
       const user = users[socket.id];
@@ -115,8 +115,34 @@ app.prepare().then(() => {
         socket.to(user.room).emit("userLeft", {id: socket.id});
         delete users[socket.id];
       }
+    });
+
+
+
+    ///SCRIBBLE SECTION
+    socket.on("joinScribble", (room: string) =>{
+      socket.join(room);
+      console.log(`socket ${socket.id} joined scribble room ${room}`);
+
+      if(!scribbleRooms[room]){
+        console.log(`Creating new Scribble room: ${room}`);
+        scribbleRooms[room] = {
+          room,
+          drawingUser: socket.id,
+          currentWord: "Wainting..."
+        };
+      }else{
+        console.log(`Joined existing scribble room: ${room}`);
+      }
+      //TO DO: MAKE SCRIBBLE ROOM LOGIC
 
     });
+
+    socket.on("chatMessage", (data: any) => {
+      console.log(`chatMessage from ${socket.id}:`, data);
+      io.to(data.room).emit("chatMessage", {user: users[socket.id]?.name || "Unknown", text: data.text, time: new Date().toISOString() });
+    });
+
   });
 
   httpServer.listen(port, () => {
