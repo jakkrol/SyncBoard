@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
 import BoardCanvas from "@/components/Board/BoardCanvas";
+import Chat from "@/components/Chat";
 
 export default function Home() {
     const [connected, setConnected] = useState(false);
@@ -43,9 +44,28 @@ export default function Home() {
 
 
   return (
-    <div>
-        <BoardCanvas socket={socket} room={room as string} strokeWidth={strokeWidth} strokeColor={strokeColor} />
-    </div>
+      <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+          
+          {/* Left Side: Canvas (grows to fill space) */}
+          <div style={{ flex: 1, position: 'relative' }}>
+              <BoardCanvas 
+                  socket={socket} 
+                  room={room as string} 
+                  strokeWidth={strokeWidth} 
+                  strokeColor={strokeColor} 
+              />
+          </div>
+
+          {/* Right Side: Chat (fixed width) */}
+          <div style={{ width: '350px', borderLeft: '1px solid #ddd' }}>
+              <Chat 
+                  socket={socket} 
+                  room={room as string} 
+                  username={socket?.id || "Anonymous"} 
+              />
+          </div>
+
+      </div>
     
   );
 }

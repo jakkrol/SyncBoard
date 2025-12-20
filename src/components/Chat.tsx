@@ -16,6 +16,7 @@ interface Message {
 
 export default function Chat({socket, room, username}: ChatProps){
     const [messages, setMessages] = useState<Message[]>([]);
+    const [inputMessage, setInputMessage] = useState("");
 
     useEffect(() => {
         if(!socket) return;
@@ -26,7 +27,7 @@ export default function Chat({socket, room, username}: ChatProps){
 
     const handleSendMessage = () => {
         if(!socket) return;
-        const messageText = "Hello from " + username;
+        const messageText = username + ": " + inputMessage;
         socket.emit("chatMessage", {room, text: messageText});
     };
 
@@ -40,12 +41,13 @@ export default function Chat({socket, room, username}: ChatProps){
             {/* MESSAGES */}
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 {messages.map((msg,index)=>(
-                    <div>
+                    <div key={index} className="p-2 bg-gray-800 rounded">
                         {msg.text}
                     </div>
                 ))}
             </div>
 
+            <textarea className="p-2 border-t border-gray-700 bg-gray-800 text-white w-full resize-none" rows={3} placeholder="Type your message..." onChange={(e) => {setInputMessage(e.target.value)}}></textarea>
             <button className="p-3 border-t border-gray-700 bg-gray-800 hover:bg-gray-700" onClick={handleSendMessage}>Send Message</button>
         </div>
     )
