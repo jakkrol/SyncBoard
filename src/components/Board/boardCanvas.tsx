@@ -53,7 +53,7 @@ const getPositionMouse = (e: React.MouseEvent) => {
 
     return(
         <canvas
-            width={1400}
+            width={1200}
             height={800}
             ref={canvasRef}
             style={{

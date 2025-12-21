@@ -47,7 +47,7 @@ export default function Home() {
       <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
           
           {/* Left Side: Canvas (grows to fill space) */}
-          <div style={{ flex: 1, position: 'relative' }}>
+          <div className="flex-1 relative m-5">
               <BoardCanvas 
                   socket={socket} 
                   room={room as string} 
