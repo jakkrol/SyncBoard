@@ -57,7 +57,7 @@ export default function Home() {
           </div>
 
           {/* Right Side: Chat (fixed width) */}
-          <div style={{ width: '350px', borderLeft: '1px solid #ddd' }}>
+          <div style={{position: 'relative' }}>
               <Chat 
                   socket={socket} 
                   room={room as string} 

@@ -47,9 +47,9 @@ export default function Chat({socket, room, username}: ChatProps){
             </div>
 
             {/* MESSAGES */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <div className="flex-1 overflow-y-auto p-1 space-y-1">
                 {messages.map((msg,index)=>(
-                    <div key={index} className="p-2 bg-gray-800 rounded">
+                    <div key={index} className="p-1">
                         {msg.text}
                     </div>
                 ))}
