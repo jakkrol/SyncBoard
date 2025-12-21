@@ -29,7 +29,15 @@ export default function Chat({socket, room, username}: ChatProps){
         if(!socket) return;
         const messageText = username + ": " + inputMessage;
         socket.emit("chatMessage", {room, text: messageText});
+        setInputMessage("");
     };
+
+    const handleEnterKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+        }
+    }
 
     return(      
         <div className="flex flex-col h-full bg-gray-900 border-l border-gray-700 w-80">
@@ -47,7 +55,7 @@ export default function Chat({socket, room, username}: ChatProps){
                 ))}
             </div>
 
-            <textarea className="p-2 border-t border-gray-700 bg-gray-800 text-white w-full resize-none" rows={3} placeholder="Type your message..." onChange={(e) => {setInputMessage(e.target.value)}}></textarea>
+            <textarea className="p-2 border-t border-gray-700 bg-gray-800 text-white w-full resize-none" rows={3} placeholder="Type your message..." value={inputMessage} onChange={(e) => {setInputMessage(e.target.value)}} onKeyDown={handleEnterKey}></textarea>
             <button className="p-3 border-t border-gray-700 bg-gray-800 hover:bg-gray-700" onClick={handleSendMessage}>Send Message</button>
         </div>
     )
