@@ -42,9 +42,35 @@ export default function Home() {
     };
   }, [room]);
 
+  const handleColorClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget as HTMLDivElement;
+    const bg = window.getComputedStyle(el).backgroundColor;
+    setStrokeColor(bg);
+  }
+
+  const handleStrokeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStrokeWidth(parseInt(e.target.value));
+  }
 
   return (
       <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+        <div className=" flex-1 relative">
+          <div className="m-2">
+              <div className="flex gap-1 mb-2">
+                <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
+                <div className="w-6 h-6 bg-red-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+                <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+                <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+                <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
+              </div>
+
+
+              <div>
+                <label className="mr-3">Brush size: {strokeWidth}</label>
+                <input type="range" min="1" max="40" maxLength={40} minLength={40} value={strokeWidth} onChange={handleStrokeChange}/>
+              </div>
+          </div>
+
           
           {/* Left Side: Canvas (grows to fill space) */}
           <div className="flex-1 relative m-5">
@@ -55,6 +81,7 @@ export default function Home() {
                   strokeColor={strokeColor} 
               />
           </div>
+        </div>
 
           {/* Right Side: Chat (fixed width) */}
           <div style={{position: 'relative' }}>
