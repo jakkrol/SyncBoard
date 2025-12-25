@@ -8,7 +8,7 @@ import CursorOverlay, { CursorOverlayRef } from "@/components/Board/CursorCanvas
 
 
 export default function Home() {
-  const [connected, setConnected] = useState(false);
+  //const [connected, setConnected] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   const {room} = useParams();
 
@@ -23,17 +23,17 @@ export default function Home() {
     setSocket(s);
     const handleConnect = () => {
       s.emit("join", room); 
-      setConnected(true);
+      //setConnected(true);
     };
  
-    s.off("connect", handleConnect);
+    // s.off("connect", handleConnect);
     s.on("connect", handleConnect);
 
     if(s.connected) handleConnect();
 
-    const handleDisconnect = () => setConnected(false);
-    s.off("disconnect", handleDisconnect);
-    s.on("disconnect", handleDisconnect);
+    // const handleDisconnect = () => setConnected(false);
+    // s.off("disconnect", handleDisconnect);
+    // s.on("disconnect", handleDisconnect);
 
   
     return () => {
@@ -77,7 +77,7 @@ export default function Home() {
   
   return (
     <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
-      <p>Status: {connected ? "Connected" : "Disconnected"}</p>
+      {/* <p>Status: {connected ? "Connected" : "Disconnected"}</p> */}
       <div className="">
 
         <div className="flex gap-1 mb-1">

@@ -1,13 +1,13 @@
 "use client";
 import { useParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
 import BoardCanvas from "@/components/Board/BoardCanvas";
 import Chat from "@/components/Chat";
 
 export default function Home() {
-    const [connected, setConnected] = useState(false);
+    //const [connected, setConnected] = useState(false);
     const [socket, setSocket] = useState<Socket | null>(null);
     const {room} = useParams();
 
@@ -20,17 +20,17 @@ export default function Home() {
     setSocket(s);
     const handleConnect = () => {
       s.emit("join", room); 
-      setConnected(true);
+      //setConnected(true);
     };
  
-    s.off("connect", handleConnect);
+    //s.off("connect", handleConnect);
     s.on("connect", handleConnect);
 
     if(s.connected) handleConnect();
 
-    const handleDisconnect = () => setConnected(false);
-    s.off("disconnect", handleDisconnect);
-    s.on("disconnect", handleDisconnect);
+    // const handleDisconnect = () => setConnected(false);
+    // s.off("disconnect", handleDisconnect);
+    // s.on("disconnect", handleDisconnect);
 
   
     return () => {
