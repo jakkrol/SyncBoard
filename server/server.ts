@@ -25,6 +25,18 @@ app.prepare().then(() => {
   const scribbleRooms: {[room: string]: { room: string; drawingUser: string; currentWord: string }} = {};
 
 
+
+
+  const broadcastPlayerList = (room: any) => {
+    const players = Object.values(users)
+        .filter(u => u.room === room)
+        .map(u => ({ name: u.name, color: u.color })); // Send safe data
+        
+        console.log(`Broadcasting player list to room ${room}:`, players);
+        console.log(users[0]);
+    io.to(room).emit("updatePlayerList", players);
+};
+
 //   const bots: { [botId: string]: { room: string, name: string, color: string } } = {
 //   bot1: { room: "room1", name: "Bot", color: "cyan" },
 //   bot2: { room: "room1", name: "Bot2", color: "yellow" },
@@ -123,6 +135,7 @@ app.prepare().then(() => {
     socket.on("joinScribble", (room: string) =>{
       socket.join(room);
       console.log(`socket ${socket.id} joined scribble room ${room}`);
+      
 
       if(!scribbleRooms[room]){
         console.log(`Creating new Scribble room: ${room}`);
@@ -134,8 +147,14 @@ app.prepare().then(() => {
       }else{
         console.log(`Joined existing scribble room: ${room}`);
       }
+      broadcastPlayerList(room);
       //TO DO: MAKE SCRIBBLE ROOM LOGIC
 
+    });
+
+    socket.on("startScribbleGame", (room: string) => {
+      console.log(`Starting scribble game in room ${room} as requested by ${socket.id}`);
+      socket.to(room).emit("startScribbleGameServer");
     });
 
     socket.on("chatMessage", (data: any) => {
