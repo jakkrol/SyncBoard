@@ -76,11 +76,11 @@ export default function Home() {
 
   
   return (
-    <div style={{ padding: 20, color: "#fff", background: "#111", minHeight: "100vh" }}>
+    <div className="flex flex-row gap-4 w-full h-screen bg-gradient-to-br from-gray-900 to-black ">
       {/* <p>Status: {connected ? "Connected" : "Disconnected"}</p> */}
-      <div className="">
+      <div className="p-4">
 
-        <div className="flex gap-1 mb-1">
+        <div className="flex gap-1 mb-1 flex-col">
           <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
           <div className="w-6 h-6 bg-red-500 border rounded cursor-pointer" onClick={handleColorClick}/>
           <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
@@ -89,29 +89,30 @@ export default function Home() {
         </div>
 
 
-        <div>
+        <div className="flex flex-col">
           <label className="mr-3">Brush size: {strokeWidth}</label>
           <input type="range" min="1" max="40" maxLength={40} minLength={40} value={strokeWidth} onChange={handleStrokeChange}/>
         </div>
       </div>
-  <div
-    style={{ position: "relative", display: "inline-block" }}
-    onMouseMove={handleContainerMouseMove}
-    onMouseLeave={handleContainerMoveLeave}
->
-    <BoardCanvas 
-            socket={socket} 
-            room={room as string} 
-            strokeWidth={strokeWidth}
-            strokeColor={strokeColor}
-        />
+      <div
+        style={{ position: "relative", display: "inline-block" }}
+        className="mt-5"
+        onMouseMove={handleContainerMouseMove}
+        onMouseLeave={handleContainerMoveLeave}
+      >
+        <BoardCanvas 
+                socket={socket} 
+                room={room as string} 
+                strokeWidth={strokeWidth}
+                strokeColor={strokeColor}
+            />
 
-    <CursorOverlay 
-          ref={cursorRef} 
-          socket={socket} 
-          room={room as string}
-        />
-  </div>
+        <CursorOverlay 
+              ref={cursorRef} 
+              socket={socket} 
+              room={room as string}
+            />
+      </div>
     </div>
   );
 }
