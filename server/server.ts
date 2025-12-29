@@ -19,18 +19,46 @@ app.prepare().then(() => {
     }
   });
 
-  const boards: { [room: string]: string } = {};
-  const users: { [socketId: string]: { room: string; name: string; color: string } } = {};
+  type User = {
+    id: string;
+    name: string;
+    color: string;
+    room: string;
+  }
 
-  const scribbleRooms: {[room: string]: { room: string; drawingUser: string; currentWord: string }} = {};
+  interface BaseRoom {
+    id: string;
+    users: string[];
+    boardData: string;
+  }
+
+  interface DrawingRoom extends BaseRoom {
+    type: "drawing";
+  }
+
+  interface ScribbleRoom extends BaseRoom {
+    type: "scribble";
+    drawingUser: string;
+    currentWord: string;
+  }
+
+  type Room = DrawingRoom | ScribbleRoom;
+  const rooms: { [roomId: string]: Room } = {};
+  const users: { [userId: string]: User } = {};
+
+  // const boards: { [room: string]: string } = {};
+  // const users: { [socketId: string]: { room: string; name: string; color: string } } = {};
+
+  // const scribbleRooms: {[room: string]: { room: string; drawingUser: string; currentWord: string }} = {};
 
 
 
 
   const broadcastPlayerList = (room: any) => {
-    const players = Object.values(users)
-        .filter(u => u.room === room)
-        .map(u => ({ name: u.name, color: u.color })); // Send safe data
+    // const players = Object.values(users)
+    //     .filter(u => u.room === room)
+    //     .map(u => ({ name: u.name, color: u.color })); // Send safe data
+    const players = rooms[room].users;
         
         console.log(`Broadcasting player list to room ${room}:`, players);
         console.log(users[0]);
@@ -60,16 +88,29 @@ app.prepare().then(() => {
 
     socket.on("join", (room: string) => {
       socket.join(room);
+
+      if(!rooms[room]){
+        rooms[room] = {
+          id: room,
+          type: "drawing",
+          users: [socket.id],
+          boardData: ""
+        }
+      }else{
+        rooms[room].users.push(socket.id);
+      }
+
       console.log(`socket ${socket.id} joined room ${room}`);
 
       users[socket.id] = {
+        id: socket.id,
         room,
         name: `User_${socket.id.substring(0, 5)}`,
         color: '#' + Math.floor(Math.random()*16777215).toString(16)
       };
 
-      if(boards[room]) {
-        socket.emit("loadBoard", boards[room]);
+      if(rooms[room]) {
+        socket.emit("loadBoard", rooms[room].boardData);
       }
       const othersInRoom = Object.entries(users).filter(([id, user]) => user.room === room && id !== socket.id).map(([id, user]) => ({id, name: user.name, color: user.color}));
       socket.emit("initializeCursors", othersInRoom); 
@@ -86,13 +127,15 @@ app.prepare().then(() => {
 
 
     socket.on("saveBoard", ({room, data}: {room: string, data: string}) => {
-      boards[room] = data;
+      console.log(`saveBoard received from ${socket.id} for room ${room}`);
+      console.log(rooms[room].id)
+      rooms[room].boardData = data;
       console.log(`Board saved for room ${room}`);
     });
 
     socket.on("drawCursor", (data: any) => {
       const user = users[socket.id];
-      console.log(`drawCursor received from ${socket.id}:`, data);
+      //console.log(`drawCursor received from ${socket.id}:`, data);
       if (!user) {
         return; 
       }
@@ -110,10 +153,14 @@ app.prepare().then(() => {
       const user = users[socket.id];
       if (!user) return;
 
+      //usuwa usera
+      rooms[room].users = rooms[room].users.filter((id) => id !== socket.id);
+
       if (user.room === room) {
         console.log(`socket ${socket.id} left room ${room}`);
 
         socket.to(room).emit("userLeft", { id: socket.id });
+        broadcastPlayerList(room);
         socket.leave(room);
 
         delete users[socket.id];
@@ -132,22 +179,37 @@ app.prepare().then(() => {
 
 
     ///SCRIBBLE SECTION
-    socket.on("joinScribble", (room: string) =>{
-      socket.join(room);
-      console.log(`socket ${socket.id} joined scribble room ${room}`);
-      
+    socket.on("joinScribble", (roomId: string) =>{
+      socket.join(roomId);
+      console.log(`socket ${socket.id} joined scribble room ${roomId}`);
 
-      if(!scribbleRooms[room]){
-        console.log(`Creating new Scribble room: ${room}`);
-        scribbleRooms[room] = {
-          room,
-          drawingUser: socket.id,
-          currentWord: "Wainting..."
-        };
+
+      users[socket.id] = {
+        id: socket.id,
+        room: roomId,
+        name: `User_${socket.id.substring(0, 5)}`, // Or pass name from client
+        color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+      };
+      
+    if (!rooms[roomId]) {
+      console.log(`Creating new Scribble room: ${roomId}`);
+      
+      rooms[roomId] = {
+        id: roomId,
+        type: 'scribble', 
+        users: [socket.id], 
+        boardData: "",      
+        drawingUser: socket.id,
+        currentWord: ""    
+      };
+      
+     
       }else{
-        console.log(`Joined existing scribble room: ${room}`);
+        console.log(`Joined existing scribble room: ${rooms[roomId]}`);
+        rooms[roomId].users.push(socket.id);
       }
-      broadcastPlayerList(room);
+
+      broadcastPlayerList(rooms[roomId].id);
       //TO DO: MAKE SCRIBBLE ROOM LOGIC
 
     });
@@ -155,6 +217,8 @@ app.prepare().then(() => {
     socket.on("startScribbleGame", (room: string) => {
       console.log(`Starting scribble game in room ${room} as requested by ${socket.id}`);
       socket.to(room).emit("startScribbleGameServer");
+
+      
     });
 
     socket.on("chatMessage", (data: any) => {

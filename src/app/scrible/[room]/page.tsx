@@ -23,7 +23,7 @@ export default function Home() {
     const s = getSocket();
     setSocket(s);
     const handleConnect = () => {
-      s.emit("join", room);
+      //s.emit("join", room);
       s.emit("joinScribble", room); 
       //setConnected(true);
     };
@@ -48,7 +48,11 @@ export default function Home() {
       s.emit("leave", room);
       s.off("connect");
       s.off("disconnect");
+      s.off("loadBoard");
+      s.off("initializeCursors");
       s.off("userJoined");
+      s.off("draw");
+      s.off("drawCursor");
       s.off("userLeft");
     };
   }, [room]);

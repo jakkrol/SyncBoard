@@ -82,7 +82,7 @@ export default function Home() {
 
         <div className="flex gap-1 mb-1 flex-col">
           <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
-          <div className="w-6 h-6 bg-red-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+          <div className="w-6 h-6 bg-red-600 border rounded cursor-pointer" onClick={handleColorClick}/>
           <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
           <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
           <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
@@ -100,11 +100,11 @@ export default function Home() {
         onMouseMove={handleContainerMouseMove}
         onMouseLeave={handleContainerMoveLeave}
       >
-        <BoardCanvas 
-                socket={socket} 
-                room={room as string} 
-                strokeWidth={strokeWidth}
-                strokeColor={strokeColor}
+        <BoardCanvas   
+              socket={socket} 
+              room={room as string} 
+              strokeWidth={strokeWidth}
+              strokeColor={strokeColor}
             />
 
         <CursorOverlay 
