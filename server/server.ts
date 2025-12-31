@@ -1,4 +1,5 @@
-// server.ts
+import { User, Room } from "./types";
+
 const { createServer } = require("http");
 const next = require("next");
 const { Server } = require("socket.io");
@@ -19,30 +20,30 @@ app.prepare().then(() => {
     }
   });
 
-  type User = {
-    id: string;
-    name: string;
-    color: string;
-    room: string;
-  }
+  // type User = {
+  //   id: string;
+  //   name: string;
+  //   color: string;
+  //   room: string;
+  // }
 
-  interface BaseRoom {
-    id: string;
-    users: string[];
-    boardData: string;
-  }
+  // interface BaseRoom {
+  //   id: string;
+  //   users: string[];
+  //   boardData: string;
+  // }
 
-  interface DrawingRoom extends BaseRoom {
-    type: "drawing";
-  }
+  // interface DrawingRoom extends BaseRoom {
+  //   type: "drawing";
+  // }
 
-  interface ScribbleRoom extends BaseRoom {
-    type: "scribble";
-    drawingUser: string;
-    currentWord: string;
-  }
+  // interface ScribbleRoom extends BaseRoom {
+  //   type: "scribble";
+  //   drawingUser: string;
+  //   currentWord: string;
+  // }
 
-  type Room = DrawingRoom | ScribbleRoom;
+  // type Room = DrawingRoom | ScribbleRoom;
   const rooms: { [roomId: string]: Room } = {};
   const users: { [userId: string]: User } = {};
 
