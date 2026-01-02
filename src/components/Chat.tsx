@@ -22,7 +22,12 @@ export default function Chat({socket, room, username}: ChatProps){
         if(!socket) return;
         socket.on("chatMessage", (data: Message) => {
             setMessages((prevMessages) => [...prevMessages, data]);
+            console.log("New chat message:", data);
         });
+
+        return () => {
+            socket.off("chatMessage");
+        }
     }, [socket])
 
     const handleSendMessage = () => {

@@ -1,8 +1,15 @@
-import { User, Room } from "./types";
+import { broadcastPlayerList } from "./sockets/common.ts";
+import { drawingSocketHandler } from "./sockets/drawing.ts";
+import { scribbleSocketHandler } from "./sockets/scribble.ts";
+import { commonSocketHandler } from "./sockets/common.ts";
 
-const { createServer } = require("http");
-const next = require("next");
-const { Server } = require("socket.io");
+//const { createServer } = require("http");
+import { createServer } from "http";
+//const next = require("next");
+import next from "next";
+//const { Server } = require("socket.io");
+import { Server } from "socket.io";
+import { create } from "domain";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -44,27 +51,19 @@ app.prepare().then(() => {
   // }
 
   // type Room = DrawingRoom | ScribbleRoom;
-  const rooms: { [roomId: string]: Room } = {};
-  const users: { [userId: string]: User } = {};
 
-  // const boards: { [room: string]: string } = {};
-  // const users: { [socketId: string]: { room: string; name: string; color: string } } = {};
-
-  // const scribbleRooms: {[room: string]: { room: string; drawingUser: string; currentWord: string }} = {};
+  // const rooms: { [roomId: string]: Room } = {};
+  // const users: { [userId: string]: User } = {};
 
 
-
-
-  const broadcastPlayerList = (room: any) => {
-    // const players = Object.values(users)
-    //     .filter(u => u.room === room)
-    //     .map(u => ({ name: u.name, color: u.color })); // Send safe data
-    const players = rooms[room].users;
+//   const broadcastPlayerList = (room: any) => {
+//     const players = rooms[room].users;
         
-        console.log(`Broadcasting player list to room ${room}:`, players);
-        console.log(users[0]);
-    io.to(room).emit("updatePlayerList", players);
-};
+//         console.log(`Broadcasting player list to room ${room}:`, players);
+//         console.log(users[0]);
+//     io.to(room).emit("updatePlayerList", players);
+// };
+
 
 //   const bots: { [botId: string]: { room: string, name: string, color: string } } = {
 //   bot1: { room: "room1", name: "Bot", color: "cyan" },
@@ -87,145 +86,150 @@ app.prepare().then(() => {
   io.on("connection", (socket: any) => {
     console.log(`a user connected: ${socket.id}`);
 
-    socket.on("join", (room: string) => {
-      socket.join(room);
 
-      if(!rooms[room]){
-        rooms[room] = {
-          id: room,
-          type: "drawing",
-          users: [socket.id],
-          boardData: ""
-        }
-      }else{
-        rooms[room].users.push(socket.id);
-      }
+    ////////SOCKET HANDLERS
+    drawingSocketHandler(io, socket);
+    scribbleSocketHandler(io, socket);
+    commonSocketHandler(io, socket);
+    ////////SOCKET HANDLERS 
 
-      console.log(`socket ${socket.id} joined room ${room}`);
+//     socket.on("join", (room: string) => {
+//       socket.join(room);
 
-      users[socket.id] = {
-        id: socket.id,
-        room,
-        name: `User_${socket.id.substring(0, 5)}`,
-        color: '#' + Math.floor(Math.random()*16777215).toString(16)
-      };
+//       if(!rooms[room]){
+//         rooms[room] = {
+//           id: room,
+//           type: "drawing",
+//           users: [socket.id],
+//           boardData: ""
+//         }
+//       }else{
+//         rooms[room].users.push(socket.id);
+//       }
 
-      if(rooms[room]) {
-        socket.emit("loadBoard", rooms[room].boardData);
-      }
-      const othersInRoom = Object.entries(users).filter(([id, user]) => user.room === room && id !== socket.id).map(([id, user]) => ({id, name: user.name, color: user.color}));
-      socket.emit("initializeCursors", othersInRoom); 
-      socket.to(room).emit("userJoined", {id: socket.id, name: users[socket.id].name, color: users[socket.id].color});
-      socket.emit("userJoined", {id: socket.id, name: users[socket.id].name, color: users[socket.id].color});
+//       console.log(`socket ${socket.id} joined room ${room}`);
+
+//       users[socket.id] = {
+//         id: socket.id,
+//         room,
+//         name: `User_${socket.id.substring(0, 5)}`,
+//         color: '#' + Math.floor(Math.random()*16777215).toString(16)
+//       };
+
+//       if(rooms[room]) {
+//         socket.emit("loadBoard", rooms[room].boardData);
+//       }
+//       const othersInRoom = Object.entries(users).filter(([id, user]) => user.room === room && id !== socket.id).map(([id, user]) => ({id, name: user.name, color: user.color}));
+//       socket.emit("initializeCursors", othersInRoom); 
+//       socket.to(room).emit("userJoined", {id: socket.id, name: users[socket.id].name, color: users[socket.id].color});
+//       socket.emit("userJoined", {id: socket.id, name: users[socket.id].name, color: users[socket.id].color});
 
 
-// Object.entries(bots)
-//   .filter(([_, bot]) => bot.room === room)
-//   .forEach(([botId, bot]) => {
-//     socket.emit("userJoined", { id: botId, name: bot.name, color: bot.color });
-//   });
-    })
+// // Object.entries(bots)
+// //   .filter(([_, bot]) => bot.room === room)
+// //   .forEach(([botId, bot]) => {
+// //     socket.emit("userJoined", { id: botId, name: bot.name, color: bot.color });
+// //   });
+//     })
 
 
-    socket.on("saveBoard", ({room, data}: {room: string, data: string}) => {
-      console.log(`saveBoard received from ${socket.id} for room ${room}`);
-      console.log(rooms[room].id)
-      rooms[room].boardData = data;
-      console.log(`Board saved for room ${room}`);
-    });
+    // socket.on("saveBoard", ({room, data}: {room: string, data: string}) => {
+    //   console.log(`saveBoard received from ${socket.id} for room ${room}`);
+    //   console.log(rooms[room].id)
+    //   rooms[room].boardData = data;
+    //   console.log(`Board saved for room ${room}`);
+    // });
 
-    socket.on("drawCursor", (data: any) => {
-      const user = users[socket.id];
-      //console.log(`drawCursor received from ${socket.id}:`, data);
-      if (!user) {
-        return; 
-      }
+    // socket.on("drawCursor", (data: any) => {
+    //   const user = users[socket.id];
+    //   //console.log(`drawCursor received from ${socket.id}:`, data);
+    //   if (!user) {
+    //     return; 
+    //   }
       
-      socket.to(data.room).emit("drawCursor", { id: socket.id, x: data.x, y: data.y, name: user.name, color: user.color });
-    });
+    //   socket.to(data.room).emit("drawCursor", { id: socket.id, x: data.x, y: data.y, name: user.name, color: user.color });
+    // });
 
-    socket.on("draw", (data: any) => {
-      console.log(`draw received from ${socket.id}:`, data);
-      //socket.broadcast.emit("draw", data);
-      socket.to(data.room).emit("draw", data);
-    });
+    // socket.on("draw", (data: any) => {
+    //   console.log(`draw received from ${socket.id}:`, data);
+    //   //socket.broadcast.emit("draw", data);
+    //   socket.to(data.room).emit("draw", data);
+    // });
 
-    socket.on("leave", (room: any) => {
-      const user = users[socket.id];
-      if (!user) return;
+    // socket.on("leave", (room: any) => {
+    //   const user = users[socket.id];
+    //   if (!user) return;
 
-      //usuwa usera
-      rooms[room].users = rooms[room].users.filter((id) => id !== socket.id);
+    //   //usuwa usera
+    //   rooms[room].users = rooms[room].users.filter((id) => id !== socket.id);
 
-      if (user.room === room) {
-        console.log(`socket ${socket.id} left room ${room}`);
+    //   if (user.room === room) {
+    //     console.log(`socket ${socket.id} left room ${room}`);
 
-        socket.to(room).emit("userLeft", { id: socket.id });
-        broadcastPlayerList(room);
-        socket.leave(room);
+    //     socket.to(room).emit("userLeft", { id: socket.id });
+    //     broadcastPlayerList(io,room);
+    //     socket.leave(room);
 
-        delete users[socket.id];
-      }
-    });
+    //     delete users[socket.id];
+    //   }
+    // });
 
-    socket.on("disconnect", () => {
-      console.log(`user disconnected: ${socket.id}`);
-      const user = users[socket.id];
-      if(user){
-        socket.to(user.room).emit("userLeft", {id: socket.id});
-        delete users[socket.id];
-      }
-    });
+    // socket.on("disconnect", () => {
+    //   console.log(`user disconnected: ${socket.id}`);
+    //   const user = users[socket.id];
+    //   if(user){
+    //     socket.to(user.room).emit("userLeft", {id: socket.id});
+    //     delete users[socket.id];
+    //   }
+    // });
 
 
 
     ///SCRIBBLE SECTION
-    socket.on("joinScribble", (roomId: string) =>{
-      socket.join(roomId);
-      console.log(`socket ${socket.id} joined scribble room ${roomId}`);
+    // socket.on("joinScribble", (roomId: string) =>{
+    //   socket.join(roomId);
+    //   console.log(`socket ${socket.id} joined scribble room ${roomId}`);
 
 
-      users[socket.id] = {
-        id: socket.id,
-        room: roomId,
-        name: `User_${socket.id.substring(0, 5)}`, // Or pass name from client
-        color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-      };
+    //   users[socket.id] = {
+    //     id: socket.id,
+    //     room: roomId,
+    //     name: `User_${socket.id.substring(0, 5)}`, // Or pass name from client
+    //     color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+    //   };
       
-    if (!rooms[roomId]) {
-      console.log(`Creating new Scribble room: ${roomId}`);
+    // if (!rooms[roomId]) {
+    //   console.log(`Creating new Scribble room: ${roomId}`);
       
-      rooms[roomId] = {
-        id: roomId,
-        type: 'scribble', 
-        users: [socket.id], 
-        boardData: "",      
-        drawingUser: socket.id,
-        currentWord: ""    
-      };
+    //   rooms[roomId] = {
+    //     id: roomId,
+    //     type: 'scribble', 
+    //     users: [socket.id], 
+    //     boardData: "",      
+    //     drawingUser: socket.id,
+    //     currentWord: ""    
+    //   };
       
      
-      }else{
-        console.log(`Joined existing scribble room: ${rooms[roomId]}`);
-        rooms[roomId].users.push(socket.id);
-      }
+    //   }else{
+    //     console.log(`Joined existing scribble room: ${rooms[roomId]}`);
+    //     rooms[roomId].users.push(socket.id);
+    //   }
 
-      broadcastPlayerList(rooms[roomId].id);
-      //TO DO: MAKE SCRIBBLE ROOM LOGIC
+    //   broadcastPlayerList(io, rooms[roomId].id);
+    //   //TO DO: MAKE SCRIBBLE ROOM LOGIC
 
-    });
+    // });
 
-    socket.on("startScribbleGame", (room: string) => {
-      console.log(`Starting scribble game in room ${room} as requested by ${socket.id}`);
-      socket.to(room).emit("startScribbleGameServer");
+    // socket.on("startScribbleGame", (room: string) => {
+    //   console.log(`Starting scribble game in room ${room} as requested by ${socket.id}`);
+    //   socket.to(room).emit("startScribbleGameServer");    
+    // });
 
-      
-    });
-
-    socket.on("chatMessage", (data: any) => {
-      console.log(`chatMessage from ${socket.id}:`, data);
-      io.to(data.room).emit("chatMessage", {user: users[socket.id]?.name || "Unknown", text: data.text, time: new Date().toISOString() });
-    });
+    // socket.on("chatMessage", (data: any) => {
+    //   console.log(`chatMessage from ${socket.id}:`, data);
+    //   io.to(data.room).emit("chatMessage", {user: users[socket.id]?.name || "Unknown", text: data.text, time: new Date().toISOString() });
+    // });
 
   });
 
