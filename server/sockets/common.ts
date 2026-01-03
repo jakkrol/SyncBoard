@@ -49,6 +49,8 @@ export const commonSocketHandler = (io: Server, socket: Socket) => {
 
 
     socket.on("disconnect", () => {
+      const room = users[socket.id].room;
+      rooms[room].users = rooms[room].users.filter((id) => id !== socket.id);
       console.log(`user disconnected: ${socket.id}`);
       const user = users[socket.id];
       if(user){
