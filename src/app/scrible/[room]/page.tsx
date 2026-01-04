@@ -17,6 +17,8 @@ export default function Home() {
     const [players, setPlayers] = useState<any[]>([]);
 
     const [gameStarted, setGameStarted] = useState(false);
+
+    const [drawingUser, setDrawingUser] = useState<string | null>(null);
     
 
   useEffect(() => {
@@ -41,6 +43,11 @@ export default function Home() {
       setPlayers(listPlayers);
       console.log("Updated player list:", listPlayers);
     });
+
+    s.on("updateGameState", (data: { drawingUser: string }) => {
+      setDrawingUser(data.drawingUser);
+      //console.log("Game state updated:", data);
+    });
     // const handleDisconnect = () => setConnected(false);
     // s.off("disconnect", handleDisconnect);
     // s.on("disconnect", handleDisconnect);
@@ -60,11 +67,15 @@ export default function Home() {
   }, [room]);
 
   const checkIfDrawingAllowed = useMemo(() => {
-    const player = players.find(p => p.id === socket?.id);
-    if(!player) return false;
+    if(!socket || !drawingUser) return false;
+    console.log("Checking drawing permission:", socket.id, drawingUser);
 
-    return  player?.isDrawer || false;
-  },[players, socket]);
+    if(socket.id === drawingUser){
+      return true;
+    }else{
+      return false;
+    }
+  },[drawingUser, socket]);
 
 
   const handleColorClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -114,7 +125,7 @@ export default function Home() {
                       room={room as string} 
                       strokeWidth={strokeWidth} 
                       strokeColor={strokeColor} 
-                      isAllowedToDraw={checkIfDrawingAllowed()}
+                      isAllowedToDraw={checkIfDrawingAllowed}
                   />
               </div>
             </div>

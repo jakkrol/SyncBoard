@@ -39,6 +39,9 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
 
     socket.on("startScribbleGame", (room: string) => {
       console.log(`Starting scribble game in room ${room} as requested by ${socket.id}`);
+      if(rooms[room].type !== "scribble") return;    
+      
+      io.in(room).emit("updateGameState", { drawingUser: rooms[room].drawingUser });
       socket.to(room).emit("startScribbleGameServer");    
     });
 
