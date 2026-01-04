@@ -13,6 +13,7 @@ interface BoardCanvasProps {
     room: string;
     strokeWidth: number;
     strokeColor: string;
+    isAllowedToDraw: boolean;
 }
 
 export default function BoardCanvas({ socket, room, strokeWidth, strokeColor }: BoardCanvasProps) {

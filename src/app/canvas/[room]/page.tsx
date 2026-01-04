@@ -105,6 +105,7 @@ export default function Home() {
               room={room as string} 
               strokeWidth={strokeWidth}
               strokeColor={strokeColor}
+              isAllowedToDraw={true}
             />
 
         <CursorOverlay 

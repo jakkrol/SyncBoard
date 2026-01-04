@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
 import BoardCanvas from "@/components/Board/BoardCanvas";
@@ -14,7 +14,7 @@ export default function Home() {
 
     const [strokeWidth, setStrokeWidth] = useState(5);
     const [strokeColor, setStrokeColor] = useState("red");
-    const [players, setPlayers] = useState<Array<{id: string, name: string}>>([]);
+    const [players, setPlayers] = useState<any[]>([]);
 
     const [gameStarted, setGameStarted] = useState(false);
     
@@ -34,7 +34,9 @@ export default function Home() {
     if(s.connected) handleConnect();
     s.on("startScribbleGameServer", () => {
       setGameStarted(true);
+
     });
+
     s.on("updatePlayerList", (listPlayers) => {
       setPlayers(listPlayers);
       console.log("Updated player list:", listPlayers);
@@ -48,14 +50,22 @@ export default function Home() {
       s.emit("leave", room);
       s.off("connect");
       s.off("disconnect");
-      s.off("loadBoard");
-      s.off("initializeCursors");
+      // s.off("loadBoard");
+      // s.off("initializeCursors");
       s.off("userJoined");
-      s.off("draw");
-      s.off("drawCursor");
+      // s.off("draw");
+      // s.off("drawCursor");
       s.off("userLeft");
     };
   }, [room]);
+
+  const checkIfDrawingAllowed = useMemo(() => {
+    const player = players.find(p => p.id === socket?.id);
+    if(!player) return false;
+
+    return  player?.isDrawer || false;
+  },[players, socket]);
+
 
   const handleColorClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget as HTMLDivElement;
@@ -104,6 +114,7 @@ export default function Home() {
                       room={room as string} 
                       strokeWidth={strokeWidth} 
                       strokeColor={strokeColor} 
+                      isAllowedToDraw={checkIfDrawingAllowed()}
                   />
               </div>
             </div>
