@@ -16,7 +16,7 @@ interface BoardCanvasProps {
     isAllowedToDraw: boolean;
 }
 
-export default function BoardCanvas({ socket, room, strokeWidth, strokeColor }: BoardCanvasProps) {
+export default function BoardCanvas({ socket, room, strokeWidth, strokeColor, isAllowedToDraw }: BoardCanvasProps) {
 const canvasRef = useRef<HTMLCanvasElement>(null); 
 const drawing = useRef(false);
 const lastPos = useRef<{ x: number; y: number } | null>(null);
@@ -57,14 +57,22 @@ const getPositionMouse = (e: React.MouseEvent) => {
             width={1200}
             height={800}
             ref={canvasRef}
-            style={{
+            style={isAllowedToDraw ?{
                 border: "solid 1px #fff",
                 background: "#111",
                 position: "absolute",
                 top: 0,
                 left: 0,
                 zIndex: 0,
-            }}
+              } : {                
+                border: "solid 1px #fff",
+                background: "#111",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 0,
+                pointerEvents: 'none',
+              }}
             onMouseDown={(e) => handleMouseDown(e, drawing, lastPos, getPositionMouse)}
             onMouseMove={(e) => handleMouseMove(e, canvasRef, drawing, lastPos, getPositionMouse, socket, room)} 
             onMouseUp={(e) => handleMouseUp(drawing, lastPos)}
