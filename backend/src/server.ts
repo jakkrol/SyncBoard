@@ -1,7 +1,7 @@
-import { broadcastPlayerList } from "./sockets/common.ts";
-import { drawingSocketHandler } from "./sockets/drawing.ts";
-import { scribbleSocketHandler } from "./sockets/scribble.ts";
-import { commonSocketHandler } from "./sockets/common.ts";
+import { broadcastPlayerList } from "./sockets/common";
+import { drawingSocketHandler } from "./sockets/drawing";
+import { scribbleSocketHandler } from "./sockets/scribble";
+import { commonSocketHandler } from "./sockets/common";
 
 //const { createServer } = require("http");
 import { createServer } from "http";
@@ -13,19 +13,39 @@ import { create } from "domain";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
-const port = 3000;
+const port = 4000;
 
-const app = next({ dev, hostname, port });
-const handle = app.getRequestHandler();
 
-app.prepare().then(() => {
-  const httpServer = createServer(handle);
-  const io = new Server(httpServer, {
-    cors: {
-      origin: "*", 
-      methods: ["GET", "POST"]
-    }
-  });
+// 1. Create a simple HTTP server (No Next.js app.prepare needed)
+const httpServer = createServer((req, res) => {
+  if (req.url === '/') {
+    res.writeHead(200);
+    res.end("SyncBoard Game Server is running!");
+  } else {
+    res.writeHead(404);
+    res.end("Not found");
+  }
+});
+
+// 2. Attach Socket.io to the server
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000", // Allow connections from your Next.js frontend
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+// const app = next({ dev, hostname, port });
+// const handle = app.getRequestHandler();
+
+// app.prepare().then(() => {
+//   const httpServer = createServer(handle);
+//   const io = new Server(httpServer, { 
+//     cors: {
+//       origin: "*", 
+//       methods: ["GET", "POST"]
+//     }
+//   });
 
   // type User = {
   //   id: string;
@@ -236,4 +256,4 @@ app.prepare().then(() => {
   httpServer.listen(port, () => {
     console.log(`> Ready on http://${hostname}:${port}`);
   });
-});
+//});

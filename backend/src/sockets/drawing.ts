@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { users, rooms } from "../sockets/states.ts";
+import { users, rooms } from "./states.ts";
 import { broadcastPlayerList } from "./common.ts";
 
 export const drawingSocketHandler = (io: Server, socket: Socket) => {
