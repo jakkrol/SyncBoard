@@ -6,6 +6,7 @@ interface ChatProps {
     socket: Socket | null;
     room: string;
     username: string;
+    isAllowedtoChat: boolean;
 }
 
 interface Message {
@@ -14,7 +15,7 @@ interface Message {
 }
 
 
-export default function Chat({socket, room, username}: ChatProps){
+export default function Chat({socket, room, username, isAllowedtoChat}: ChatProps){
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputMessage, setInputMessage] = useState("");
 
@@ -31,7 +32,7 @@ export default function Chat({socket, room, username}: ChatProps){
     }, [socket])
 
     const handleSendMessage = () => {
-        if(!socket) return;
+        if(!socket || !isAllowedtoChat) return;
         const messageText = username + ": " + inputMessage;
         socket.emit("chatMessage", {room, text: messageText});
         setInputMessage("");
@@ -60,7 +61,7 @@ export default function Chat({socket, room, username}: ChatProps){
                 ))}
             </div>
 
-            <textarea className="p-2 border-t border-gray-700 bg-gray-800 text-white w-full resize-none" rows={3} placeholder="Type your message..." value={inputMessage} onChange={(e) => {setInputMessage(e.target.value)}} onKeyDown={handleEnterKey}></textarea>
+            <textarea readOnly={!isAllowedtoChat} className="p-2 border-t border-gray-700 bg-gray-800 text-white w-full resize-none" rows={3} placeholder="Type your message..." value={inputMessage} onChange={(e) => {setInputMessage(e.target.value)}} onKeyDown={handleEnterKey}></textarea>
             <button className="p-3 border-t border-gray-700 bg-gray-800 hover:bg-gray-700" onClick={handleSendMessage}>Send Message</button>
         </div>
     )

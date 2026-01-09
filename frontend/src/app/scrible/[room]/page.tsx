@@ -134,7 +134,8 @@ export default function Home() {
                 <Chat 
                     socket={socket} 
                     room={room as string} 
-                    username={socket?.id || "Anonymous"} 
+                    username={socket?.id || "Anonymous"}
+                    isAllowedtoChat={!checkIfDrawingAllowed}
                 />
             </div> 
           </div>
