@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useImperativeHandle, forwardRef, use } from "react";
+import { useEffect, useRef, useImperativeHandle, forwardRef} from "react";
 import { Socket } from "socket.io-client";
 import { Cursor } from "../../lib/Cursor";
-// Adjust these import paths to match where your socket handlers live
 import { onInitCursors } from "../../lib/socketHandlers/onInitCursors";
 import { onUserJoined } from "../../lib/socketHandlers/onUserJoined";
 import { onDrawCursors } from "../../lib/socketHandlers/onDrawCursors";
@@ -14,7 +13,6 @@ interface CursorOverlayProps {
   room: string;
 }
 
-// This interface defines what the Parent is allowed to call on this component
 export interface CursorOverlayRef {
   moveMyCursor: (x: number, y: number) => void;
   clear: () => void;

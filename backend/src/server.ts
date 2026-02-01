@@ -16,7 +16,6 @@ const hostname = "localhost";
 const port = 4000;
 
 
-// 1. Create a simple HTTP server (No Next.js app.prepare needed)
 const httpServer = createServer((req, res) => {
   if (req.url === '/') {
     res.writeHead(200);
@@ -27,10 +26,9 @@ const httpServer = createServer((req, res) => {
   }
 });
 
-// 2. Attach Socket.io to the server
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000", // Allow connections from your Next.js frontend
+    origin: "http://localhost:3000", 
     methods: ["GET", "POST"],
     credentials: true
   }
