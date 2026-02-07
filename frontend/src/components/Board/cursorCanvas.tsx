@@ -66,8 +66,8 @@ const CursorOverlay = forwardRef<CursorOverlayRef, CursorOverlayProps>(({ socket
   return (
     <canvas
       ref={cursorCanvasRef}
-      width={1400}
-      height={800}
+      width={1000}
+      height={600}
       style={{
         position: "absolute",
         top: 0,

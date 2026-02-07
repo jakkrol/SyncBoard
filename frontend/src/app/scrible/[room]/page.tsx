@@ -6,6 +6,7 @@ import { getSocket } from "../../../lib/socket";
 import BoardCanvas from "../../../components/Board/boardCanvas";
 import Chat from "../../../components/Chat";
 import ScribbleLobby from "../../../components/Board/ScribbleLobby";
+import ColorPicker from "../../../components/ColorPicker";
 
 export default function Home() {
     //const [connected, setConnected] = useState(false);
@@ -108,6 +109,7 @@ export default function Home() {
                       <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
                       <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
                       <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
+                      
                     </div>
 
 

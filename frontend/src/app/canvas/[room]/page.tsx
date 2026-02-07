@@ -5,6 +5,7 @@ import { Socket } from "socket.io-client";
 import { getSocket } from "../../../lib/socket";
 import BoardCanvas from "../../../components/Board/boardCanvas";
 import CursorOverlay, { CursorOverlayRef } from "../../../components/Board/cursorCanvas";
+import ColorPicker from "@/components/ColorPicker";
 
 
 export default function Home() {
@@ -76,11 +77,8 @@ export default function Home() {
 
   
   return (
-  // 1. Add 'h-screen w-screen overflow-hidden' to lock the window size
   <div className="flex h-screen w-screen overflow-hidden ">
     
-    {/* Sidebar */}
-    {/* Removed 'p-4' here to be safer, added explicit width 'w-20' or similar if needed */}
     <div className="p-4 flex flex-col z-10"> 
       
       {/* Color Picker */}
@@ -90,12 +88,12 @@ export default function Home() {
          <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
          <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
          <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
+         <ColorPicker />
       </div>
 
       {/* Slider */}
       <div className="flex flex-col relative items-center">
         <label className="text-xs mb-1">Brush size: {strokeWidth}px</label>
-        {/* Changed input to vertical if you want, or keep it horizontal but ensure container width */}
         <input 
             type="range" 
             min="1" 
