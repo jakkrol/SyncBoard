@@ -22,7 +22,7 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
         type: 'scribble', 
         users: [socket.id], 
         boardData: "",      
-        drawingUser: socket.id,
+        drawingUser: "",
         currentWord: ""    
       };   
       }else{
@@ -41,7 +41,7 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
       console.log(`Starting scribble game in room ${room} as requested by ${socket.id}`);
       if(rooms[room].type !== "scribble") return;    
       
-      io.in(room).emit("updateGameState", { drawingUser: rooms[room].drawingUser });
+      io.in(room).emit("updateGameState", { drawingUser: rooms[room].users[0] }); // Set first user as drawing user
       socket.to(room).emit("startScribbleGameServer");    
     });
 
