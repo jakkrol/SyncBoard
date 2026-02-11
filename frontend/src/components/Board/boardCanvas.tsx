@@ -54,6 +54,7 @@ const getPositionMouse = (e: React.MouseEvent) => {
 
     return(
         <canvas
+            className="cursor-crosshair"
             width={1000}
             height={600}
             ref={canvasRef}

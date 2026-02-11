@@ -107,7 +107,7 @@ export default function Home() {
 
     {/* Canvas Container */}
     <div
-      className="flex-1 relative cursor-crosshair m-5"
+      className="flex-1 relative m-5"
       onMouseMove={handleContainerMouseMove}
       onMouseLeave={handleContainerMoveLeave}
     >
