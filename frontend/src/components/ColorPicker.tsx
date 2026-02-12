@@ -1,9 +1,18 @@
 "use client"
+import { useEffect, useState, useMemo } from "react";
 
-export default function ColorPicker(){
+
+interface ColorPickerProps {
+    onColorChange: (color: string) => void;
+}
+
+export default function ColorPicker({onColorChange}: ColorPickerProps){
+    const [selectedColor, setSelectedColor] = useState("#ff0000");
 
     const chan = (e: React.ChangeEvent<HTMLInputElement>) => {
         const hexValue = e.target.value;
+        onColorChange(hexValue);
+        setSelectedColor(hexValue);
         const r = parseInt(hexValue.slice(1, 3), 16);
         const g = parseInt(hexValue.slice(3, 5), 16);
         const b = parseInt(hexValue.slice(5, 7), 16);
@@ -12,11 +21,11 @@ export default function ColorPicker(){
     }
     return(
             <div className="color-picker">
-                <input type="color" onChange={chan} id="colorInput" value="#ff0000"/>
-                <div className="color-info">
+                <input type="color" onChange={chan} id="colorInput" value={selectedColor}/>
+                {/* <div className="color-info">
                     <p>HEX: <span id="hexValue">#ff0000</span></p>
                     <p>RGB: <span id="rgbValue">rgb(255, 0, 0)</span></p>
-                </div>
+                </div> */}
             </div>
         
     );
