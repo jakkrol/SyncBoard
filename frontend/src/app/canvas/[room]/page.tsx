@@ -88,9 +88,6 @@ export default function Home() {
          <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
          <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
          <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
-         <ColorPicker 
-            onColorChange={(color) => setStrokeColor(color)}
-         />
       </div>
 
       {/* Slider */}
@@ -104,6 +101,9 @@ export default function Home() {
             onChange={handleStrokeChange}
             className="w-24 "
         /> 
+      </div>
+      <div className="mt-4">
+        <ColorPicker onColorChange={(color) => setStrokeColor(color)}/>
       </div>
     </div>
 
