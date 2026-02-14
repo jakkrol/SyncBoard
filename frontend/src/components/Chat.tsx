@@ -7,6 +7,7 @@ interface ChatProps {
     room: string;
     username: string;
     isAllowedtoChat: boolean;
+    onMessageSent: (message: string) => void;
 }
 
 interface Message {

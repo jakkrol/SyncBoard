@@ -13,6 +13,7 @@ export default function Home() {
     const [socket, setSocket] = useState<Socket | null>(null);
     const {room} = useParams();
 
+    const [word, setWord] = useState("");
     const [strokeWidth, setStrokeWidth] = useState(5);
     const [strokeColor, setStrokeColor] = useState("red");
     const [players, setPlayers] = useState<any[]>([]);
@@ -45,8 +46,9 @@ export default function Home() {
       console.log("Updated player list:", listPlayers);
     });
 
-    s.on("updateGameState", (data: { drawingUser: string }) => {
+    s.on("updateGameState", (data: { drawingUser: string, currentWord: string }) => {
       setDrawingUser(data.drawingUser);
+      setWord(data.currentWord);
       //console.log("Game state updated:", data);
     });
     // const handleDisconnect = () => setConnected(false);
@@ -101,6 +103,9 @@ export default function Home() {
           <ScribbleLobby socket={socket} room={room as string} players={players} onStart={() => {handleStartGame()}} />
         ) : (
           <div className="flex flex-1">
+                <div>
+                  <h1 className="text-2xl font-bold p-4">Word to guess: {word}</h1>
+                </div>
               <div className=" flex-1 relative">
                 <div className="m-2">
                     <div className="flex gap-1 mb-2">
@@ -138,6 +143,7 @@ export default function Home() {
                     room={room as string} 
                     username={socket?.id || "Anonymous"}
                     isAllowedtoChat={!checkIfDrawingAllowed}
+                    onMessageSent={(message) => console.log("Message sent:", message)}
                 />
             </div> 
           </div>

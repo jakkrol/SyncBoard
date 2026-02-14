@@ -41,8 +41,8 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
       console.log(`Starting scribble game in room ${room} as requested by ${socket.id}`);
       if(rooms[room].type !== "scribble") return;    
       
-      io.in(room).emit("updateGameState", { drawingUser: rooms[room].users[0] }); // Set first user as drawing user
-      socket.to(room).emit("startScribbleGameServer");    
+      io.in(room).emit("updateGameState", { drawingUser: rooms[room].users[0], currentWord: "dog"}); // Set first user as drawing user
+      socket.to(room).emit("startScribbleGameServer");
     });
 
 
@@ -51,4 +51,7 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
       console.log(`chatMessage from ${socket.id}:`, data);
       io.to(data.room).emit("chatMessage", {user: users[socket.id]?.name || "Unknown", text: data.text, time: new Date().toISOString() });
     });
+
+
+
 };
