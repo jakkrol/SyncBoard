@@ -103,9 +103,11 @@ export default function Home() {
           <ScribbleLobby socket={socket} room={room as string} players={players} onStart={() => {handleStartGame()}} />
         ) : (
           <div className="flex flex-1">
+                {checkIfDrawingAllowed && (
                 <div>
                   <h1 className="text-2xl font-bold p-4">Word to guess: {word}</h1>
-                </div>
+                </div> 
+                )}
               <div className=" flex-1 relative">
                 <div className="m-2">
                     <div className="flex gap-1 mb-2">
