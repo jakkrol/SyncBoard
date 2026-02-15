@@ -79,7 +79,7 @@ export default function Home() {
   return (
   <div className="flex h-screen w-screen overflow-hidden ">
     
-    <div className="p-4 flex flex-col z-10"> 
+    <div className="p-4 flex flex-col z-10 relative"> 
       
       {/* Color Picker */}
       <div className="flex gap-1 mb-4 flex-col">

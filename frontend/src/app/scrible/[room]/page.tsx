@@ -97,57 +97,88 @@ export default function Home() {
       setGameStarted(true);
     }
   };
+
+  const handleMessageCheck = (message: string) => {
+    if(!checkIfDrawingAllowed && message.trim().toLowerCase() === word.trim().toLowerCase()){
+      alert("Successfully guessed the word!");
+  }
+}
+
+
   return (
       <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
         {!gameStarted ? (
           <ScribbleLobby socket={socket} room={room as string} players={players} onStart={() => {handleStartGame()}} />
         ) : (
-          <div className="flex flex-1">
-                {checkIfDrawingAllowed && (
-                <div>
-                  <h1 className="text-2xl font-bold p-4">Word to guess: {word}</h1>
-                </div> 
-                )}
-              <div className=" flex-1 relative">
-                <div className="m-2">
-                    <div className="flex gap-1 mb-2">
-                      <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
-                      <div className="w-6 h-6 bg-red-500 border rounded cursor-pointer" onClick={handleColorClick}/>
-                      <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
-                      <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
-                      <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
-                      
-                    </div>
-
-
-                    <div>
-                      <label className="mr-3">Brush size: {strokeWidth}</label>
-                      <input type="range" min="1" max="40" maxLength={40} minLength={40} value={strokeWidth} onChange={handleStrokeChange}/>
-                    </div>
+          <div className=" h-screen w-screen">
+            <div className="flex h-screen w-screen overflow-hidden ">
+              
+              {/* COL 1 */}
+              <div className="p-4 flex flex-col z-10"> 
+                {/* Color Picker */}
+                <div className="flex gap-1 mb-4 flex-col">
+                   <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
+                   <div className="w-6 h-6 bg-red-600 border rounded cursor-pointer" onClick={handleColorClick}/>
+                   <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+                   <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
+                   <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
                 </div>
+          
+                {/* Slider */}
+                <div className="flex flex-col relative items-center">
+                  <label className="text-xs mb-1">Brush size: {strokeWidth}px</label>
+                  <input 
+                      type="range" 
+                      min="1" 
+                      max="40" 
+                      value={strokeWidth} 
+                      onChange={handleStrokeChange}
+                      className="w-24 "
+                  /> 
+                </div>
+                <div className="mt-4">
+                  <ColorPicker onColorChange={(color) => setStrokeColor(color)}/>
+                </div>
+              </div>
 
               
+              {/* COL 2: CENTER PANEL */}
+              <div className="flex-1 flex flex-col relative ">
+                  
+                  {/*HEADER (If drawing now) */}
+                  {checkIfDrawingAllowed && (
+                      <div className="h-16 w-full flex items-center justify-center">
+                          <h1 className="text-2xl font-bold text-blue-600">
+                              Word to guess: {word}
+                          </h1>
+                      </div> 
+                  )}
 
-              <div className="flex-1 relative m-5">
-                  <BoardCanvas 
-                      socket={socket} 
-                      room={room as string} 
-                      strokeWidth={strokeWidth} 
-                      strokeColor={strokeColor} 
-                      isAllowedToDraw={checkIfDrawingAllowed}
-                  />
+          
+                  <div className="flex-1 relative m-5  overflow-hidden ">
+                      <BoardCanvas 
+                          socket={socket} 
+                          room={room as string} 
+                          strokeWidth={strokeWidth} 
+                          strokeColor={strokeColor} 
+                          isAllowedToDraw={checkIfDrawingAllowed}
+                      />
+                  </div>
+
               </div>
-            </div>
+            
 
-            <div style={{position: 'relative' }}>
+            {/* COL 3 */}
+            <div className="flex">
                 <Chat 
                     socket={socket} 
                     room={room as string} 
                     username={socket?.id || "Anonymous"}
                     isAllowedtoChat={!checkIfDrawingAllowed}
-                    onMessageSent={(message) => console.log("Message sent:", message)}
+                    onMessageSent={(message) => handleMessageCheck(message)}
                 />
             </div> 
+          </div>
           </div>
         )}
 
