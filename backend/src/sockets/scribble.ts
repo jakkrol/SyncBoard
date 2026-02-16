@@ -23,7 +23,8 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
         users: [socket.id], 
         boardData: "",      
         drawingUser: "",
-        currentWord: ""    
+        currentWord: "" ,
+        alreadyDrawnUsers: []   
       };   
       }else{
         console.log(`Joined existing scribble room: ${rooms[roomId]}`);
@@ -40,8 +41,8 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
     socket.on("startScribbleGame", (room: string) => {
       console.log(`Starting scribble game in room ${room} as requested by ${socket.id}`);
       if(rooms[room].type !== "scribble") return;    
-      
-      io.in(room).emit("updateGameState", { drawingUser: rooms[room].users[0], currentWord: "dog"}); // Set first user as drawing user
+      rooms[room].drawingUser = rooms[room].users[0]; 
+      io.in(room).emit("updateGameState", { drawingUser: rooms[room].drawingUser, currentWord: "dog"}); // Set first user as drawing user
       socket.to(room).emit("startScribbleGameServer");
     });
 
@@ -52,6 +53,25 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
       io.to(data.room).emit("chatMessage", {user: users[socket.id]?.name || "Unknown", text: data.text, time: new Date().toISOString() });
     });
 
+
+    socket.on("correctGuess", (data: any) => {
+      console.log(`correctGuess from ${socket.id}:`, data);
+      console.log(data.room);
+      const currentRoom = rooms[data.room];
+      if(currentRoom.type == "scribble"){
+        console.log("Current room is scribble");
+        console.log("Current drawing user:", currentRoom.drawingUser);
+        currentRoom.alreadyDrawnUsers.push(currentRoom.drawingUser);
+        console.log("Already drawn users:", currentRoom.alreadyDrawnUsers);
+
+
+        currentRoom.drawingUser = currentRoom.users.find((id) => !currentRoom.alreadyDrawnUsers.includes(id)) || "";
+
+        currentRoom.currentWord = "cat"; 
+        console.log("New drawing user:", currentRoom.drawingUser);
+        io.in(data.room).emit("updateGameState", { drawingUser: currentRoom.drawingUser, currentWord: currentRoom.currentWord});
+      }
+    })
 
 
 };
