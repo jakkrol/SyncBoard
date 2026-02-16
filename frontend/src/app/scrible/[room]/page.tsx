@@ -99,6 +99,7 @@ export default function Home() {
   };
 
   const handleMessageCheck = (message: string) => {
+    console.log("Checking message:", message, "against word:", word);
     if(!checkIfDrawingAllowed && message.trim().toLowerCase() === word.trim().toLowerCase()){
       alert("Successfully guessed the word!");
   }

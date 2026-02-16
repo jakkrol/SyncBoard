@@ -16,7 +16,7 @@ interface Message {
 }
 
 
-export default function Chat({socket, room, username, isAllowedtoChat}: ChatProps){
+export default function Chat({socket, room, username, isAllowedtoChat, onMessageSent}: ChatProps){
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputMessage, setInputMessage] = useState("");
 
@@ -37,6 +37,7 @@ export default function Chat({socket, room, username, isAllowedtoChat}: ChatProp
         const messageText = username + ": " + inputMessage;
         socket.emit("chatMessage", {room, text: messageText});
         setInputMessage("");
+        onMessageSent(messageText.substring(username.length + 2)); 
     };
 
     const handleEnterKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
