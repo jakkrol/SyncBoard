@@ -99,7 +99,9 @@ export default function Home() {
   };
 
   const handleMessageCheck = (message: string) => {
+    console.log("Checking message:", message, "against word:", word);
     if(!checkIfDrawingAllowed && message.trim().toLowerCase() === word.trim().toLowerCase()){
+      socket?.emit("correctGuess", {room, username: socket.id});
       alert("Successfully guessed the word!");
   }
 }
@@ -111,7 +113,7 @@ export default function Home() {
           <ScribbleLobby socket={socket} room={room as string} players={players} onStart={() => {handleStartGame()}} />
         ) : (
           <div className=" h-screen w-screen">
-            <div className="flex h-screen w-screen overflow-hidden ">
+            <div className="flex h-screen w-screen overflow-hidden">
               
               {/* COL 1 */}
               <div className="p-4 flex flex-col z-10"> 

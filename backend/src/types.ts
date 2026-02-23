@@ -19,6 +19,9 @@
     type: "scribble";
     drawingUser: string;
     currentWord: string;
+    alreadyDrawnUsers: string[];
+    scoreboard: Record<string, number>;
+    round: number;
   }
 
   export type Room = DrawingRoom | ScribbleRoom;
