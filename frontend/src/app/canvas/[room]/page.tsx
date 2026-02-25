@@ -118,7 +118,7 @@ export default function Home() {
            strokeWidth={strokeWidth}
            strokeColor={strokeColor}
            isAllowedToDraw={true}
-           isEreaser={false}
+           isEreaser={true}
       />
 
       <CursorOverlay 
