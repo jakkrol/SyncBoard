@@ -14,9 +14,10 @@ interface BoardCanvasProps {
     strokeWidth: number;
     strokeColor: string;
     isAllowedToDraw: boolean;
+    isEreaser: boolean;
 }
 
-export default function BoardCanvas({ socket, room, strokeWidth, strokeColor, isAllowedToDraw }: BoardCanvasProps) {
+export default function BoardCanvas({ socket, room, strokeWidth, strokeColor, isAllowedToDraw, isEreaser }: BoardCanvasProps) {
 const canvasRef = useRef<HTMLCanvasElement>(null); 
 const drawing = useRef(false);
 const lastPos = useRef<{ x: number; y: number } | null>(null);
@@ -38,10 +39,15 @@ useEffect(() => {
     if(!canvasRef.current) return;
     const ctx = canvasRef.current.getContext('2d')!;
     ctx.lineWidth = strokeWidth;
-    ctx.strokeStyle = strokeColor;
     ctx.lineCap = "round"; 
     ctx.lineJoin = "round";
-},[strokeWidth, strokeColor]);
+    if(isEreaser) {
+        ctx.globalCompositeOperation = 'destination-out';
+    } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = strokeColor;
+    }
+},[strokeWidth, strokeColor, isEreaser]);
 
 
 const getPositionMouse = (e: React.MouseEvent) => {

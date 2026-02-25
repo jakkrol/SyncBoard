@@ -62,13 +62,11 @@ export default function Home() {
     cursorRef.current?.clear();
   }
 
-
- 
-  const handleColorClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const element = e.target as HTMLDivElement;
-    const color = window.getComputedStyle(element).backgroundColor;
-    setStrokeColor(color);
-  }
+  // const handleColorClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   const element = e.target as HTMLDivElement;
+  //   const color = window.getComputedStyle(element).backgroundColor;
+  //   setStrokeColor(color);
+  // }
 
   const handleStrokeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const size = parseInt(e.target.value, 10);
@@ -82,16 +80,20 @@ export default function Home() {
     <div className="p-4 flex flex-col z-10 relative"> 
       
       {/* Color Picker */}
-      <div className="flex gap-1 mb-4 flex-col">
+      {/* <div className="flex gap-1 mb-4 flex-col">
          <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={handleColorClick}/>
          <div className="w-6 h-6 bg-red-600 border rounded cursor-pointer" onClick={handleColorClick}/>
          <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={handleColorClick}/>
          <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={handleColorClick}/>
          <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={handleColorClick}/>
+      </div> */}
+
+      <div className="mt-4">
+        <ColorPicker onColorChange={(color) => setStrokeColor(color)}/>
       </div>
 
       {/* Slider */}
-      <div className="flex flex-col relative items-center">
+      <div className="flex flex-col relative items-center mt-5">
         <label className="text-xs mb-1">Brush size: {strokeWidth}px</label>
         <input 
             type="range" 
@@ -101,9 +103,6 @@ export default function Home() {
             onChange={handleStrokeChange}
             className="w-24 "
         /> 
-      </div>
-      <div className="mt-4">
-        <ColorPicker onColorChange={(color) => setStrokeColor(color)}/>
       </div>
     </div>
 
@@ -119,6 +118,7 @@ export default function Home() {
            strokeWidth={strokeWidth}
            strokeColor={strokeColor}
            isAllowedToDraw={true}
+           isEreaser={false}
       />
 
       <CursorOverlay 

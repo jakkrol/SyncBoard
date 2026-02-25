@@ -20,29 +20,39 @@ export default function ColorPicker({onColorChange}: ColorPickerProps){
         console.log("Selected color:", hexValue, rgbValue);
     }
     return(
-        <div className="relative flex items-center gap-3 p-1.5 pr-4 bg-white rounded-full border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all w-fit group">
-            
-            {/* Circular Swatch */}
-            <div 
-                className="w-8 h-8 rounded-full shadow-inner ring-1 ring-black/10"
-                style={{ backgroundColor: selectedColor }}
-            />
-            
-            {/* Text Info */}
-            <div className="flex flex-col">
-                <span className="text-[10px] text-gray-500 font-semibold uppercase leading-none">Primary</span>
-                <span className="font-mono text-sm text-gray-800 uppercase leading-tight mt-0.5 group-hover:text-blue-600 transition-colors">
-                    {selectedColor}
-                </span>
+        <div>
+            <div className="flex gap-1 mb-4 flex-col">
+                <div className="w-6 h-6 bg-white border rounded cursor-pointer" onClick={() => onColorChange("#ffffff")}/>
+                <div className="w-6 h-6 bg-red-600 border rounded cursor-pointer" onClick={() => onColorChange("#ff0000")}/>
+                <div className="w-6 h-6 bg-green-500 border rounded cursor-pointer" onClick={() => onColorChange("#00ff00")}/>
+                <div className="w-6 h-6 bg-blue-500 border rounded cursor-pointer" onClick={() => onColorChange("#0000ff")}/>
+                <div className="w-6 h-6 bg-yellow-400 border rounded cursor-pointer" onClick={() => onColorChange("#ffff00")}/>
             </div>
+        
+            <div className="relative flex items-center gap-3 p-1.5 pr-4 bg-white rounded-full border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all w-fit group">
 
-            {/* Invisible Input */}
-            <input 
-                type="color" 
-                value={selectedColor} 
-                onChange={chan}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
+                {/* Circular Swatch */}
+                <div 
+                    className="w-8 h-8 rounded-full shadow-inner ring-1 ring-black/10"
+                    style={{ backgroundColor: selectedColor }}
+                />
+                
+                {/* Text Info */}
+                <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-500 font-semibold uppercase leading-none">Primary</span>
+                    <span className="font-mono text-sm text-gray-800 uppercase leading-tight mt-0.5 group-hover:text-blue-600 transition-colors">
+                        {selectedColor}
+                    </span>
+                </div>
+
+                {/* Invisible Input */}
+                <input 
+                    type="color" 
+                    value={selectedColor} 
+                    onChange={chan}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+            </div>
         </div>
         
     );
