@@ -96,8 +96,12 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
         currentRoom.currentWord = word; 
         console.log("New drawing user:", currentRoom.drawingUser);
         io.in(data.room).emit("updateGameState", { drawingUser: currentRoom.drawingUser, currentWord: currentRoom.currentWord, round: currentRoom.round, scoreboard: currentRoom.scoreboard });
+
+        io.in(data.room).emit("clearBoard");
       }
     })
+
+
 
 
 };

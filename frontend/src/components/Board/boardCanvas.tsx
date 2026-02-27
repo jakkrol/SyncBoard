@@ -29,6 +29,10 @@ useEffect(() => {
     onLoadBoard(ctx, canvasRef, socket);
     onDraw(ctx, socket);
 
+    socket.on("clearBoard", () => {
+        ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+    });
+
     return () => {
       socket.off("loadBoard");
       socket.off("draw");
