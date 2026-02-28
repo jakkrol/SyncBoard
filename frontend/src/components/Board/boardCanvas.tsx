@@ -14,10 +14,10 @@ interface BoardCanvasProps {
     strokeWidth: number;
     strokeColor: string;
     isAllowedToDraw: boolean;
-    isEreaser: boolean;
+    isEraser: boolean;
 }
 
-export default function BoardCanvas({ socket, room, strokeWidth, strokeColor, isAllowedToDraw, isEreaser }: BoardCanvasProps) {
+export default function BoardCanvas({ socket, room, strokeWidth, strokeColor, isAllowedToDraw, isEraser }: BoardCanvasProps) {
 const canvasRef = useRef<HTMLCanvasElement>(null); 
 const drawing = useRef(false);
 const lastPos = useRef<{ x: number; y: number } | null>(null);
@@ -45,13 +45,13 @@ useEffect(() => {
     ctx.lineWidth = strokeWidth;
     ctx.lineCap = "round"; 
     ctx.lineJoin = "round";
-    if(isEreaser) {
+    if(isEraser) {
         ctx.globalCompositeOperation = 'destination-out';
     } else {
         ctx.globalCompositeOperation = 'source-over';
         ctx.strokeStyle = strokeColor;
     }
-},[strokeWidth, strokeColor, isEreaser]);
+},[strokeWidth, strokeColor, isEraser]);
 
 
 const getPositionMouse = (e: React.MouseEvent) => {
@@ -85,7 +85,7 @@ const getPositionMouse = (e: React.MouseEvent) => {
                 pointerEvents: 'none',
               }}
             onMouseDown={(e) => handleMouseDown(e, drawing, lastPos, getPositionMouse)}
-            onMouseMove={(e) => handleMouseMove(e, canvasRef, drawing, lastPos, getPositionMouse, socket, room)} 
+            onMouseMove={(e) => handleMouseMove(e, canvasRef, drawing, lastPos, getPositionMouse, socket, room, isEraser)} 
             onMouseUp={(e) => handleMouseUp(drawing, lastPos)}
             onMouseLeave={(e) => handleMouseUp(drawing, lastPos)}
         />

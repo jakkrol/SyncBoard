@@ -17,6 +17,7 @@ export default function Home() {
 
   const [strokeWidth, setStrokeWidth] = useState(5);
   const [strokeColor, setStrokeColor] = useState("red");
+  const [isEraserOn, setIsEraserOn] = useState(false);
   
 
   useEffect(() => {
@@ -104,6 +105,24 @@ export default function Home() {
             className="w-24 "
         /> 
       </div>
+
+        {/* Ereaser */}
+        <button
+            onClick={() => setIsEraserOn(!isEraserOn)}
+            title="Toggle Eraser"
+            className={`p-2.5 rounded-lg transition-all duration-200 flex items-center justify-center ${
+                isEraserOn
+                    ? "bg-gray-800 text-white shadow-md scale-105"
+                    : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-100 hover:text-gray-800 shadow-sm"
+            }`}
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
+                <path d="M22 21H7"/>
+                <path d="m5 11 9 9"/>
+            </svg>
+      </button>
+
     </div>
 
     {/* Canvas Container */}
@@ -118,7 +137,7 @@ export default function Home() {
            strokeWidth={strokeWidth}
            strokeColor={strokeColor}
            isAllowedToDraw={true}
-           isEreaser={true}
+           isEraser={isEraserOn}
       />
 
       <CursorOverlay 

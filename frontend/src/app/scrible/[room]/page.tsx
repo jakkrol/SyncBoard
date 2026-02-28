@@ -165,7 +165,7 @@ export default function Home() {
                           strokeWidth={strokeWidth} 
                           strokeColor={strokeColor} 
                           isAllowedToDraw={checkIfDrawingAllowed}
-                          isEreaser={false}
+                          isEraser={false}
                       />
                   </div>
 
