@@ -7,6 +7,7 @@ import BoardCanvas from "../../../components/Board/boardCanvas";
 import Chat from "../../../components/Chat";
 import ScribbleLobby from "../../../components/Board/ScribbleLobby";
 import ColorPicker from "../../../components/ColorPicker";
+import ScoreBoard from "@/components/ScoreBoard";
 
 export default function Home() {
     //const [connected, setConnected] = useState(false);
@@ -21,6 +22,12 @@ export default function Home() {
     const [gameStarted, setGameStarted] = useState(false);
 
     const [drawingUser, setDrawingUser] = useState<string | null>(null);
+
+    const [gameState, setGameState] = useState({
+        scoreboard: {},
+        currentWord: "",
+        drawingUser: ""
+    });
     
 
   useEffect(() => {
@@ -51,6 +58,12 @@ export default function Home() {
       setWord(data.currentWord);
       //console.log("Game state updated:", data);
     });
+    s.on("updateGameState", (data)=>{
+      setGameState(data);
+    })
+
+
+
     // const handleDisconnect = () => setConnected(false);
     // s.off("disconnect", handleDisconnect);
     // s.on("disconnect", handleDisconnect);
@@ -114,6 +127,7 @@ export default function Home() {
         ) : (
           <div className=" h-screen w-screen">
             <div className="flex h-screen w-screen overflow-hidden">
+              <ScoreBoard scoreboard={gameState.scoreboard} drawingUser={gameState.drawingUser}/>
               
             <div className="p-4 flex flex-col z-10 relative"> 
               
