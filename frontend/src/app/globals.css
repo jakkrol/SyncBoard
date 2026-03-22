@@ -1,39 +1,70 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: linear-gradient(to right, #b6fbff, #83a4d4);
+  --foreground: #1e293b; 
+  --primary: #0f172a;    
+
+  --action: #0284c7;        /* Sky 600 */
+  --action-hover: #0369a1;  /* Sky 700 */
+  --action-soft: rgba(2, 132, 199, 0.1); 
+
+  --accent-gradient: linear-gradient(135deg, #06b6d4, #3b82f6);
+  
+  --card-bg: rgba(255, 255, 255, 0.4); 
+  --input-bg: rgba(255, 255, 255, 0.6);
+  --ui-border: rgba(15, 23, 42, 0.1);  
+  --text-muted: #475569;
+}
+
+.dark {
+  --background: linear-gradient(to bottom right, var(--color-gray-900), #000000);
+  --foreground: #ededed;
+  --primary: #ffffff;
+
+
+  --action: #4f46e5;        /* Indigo 600 */
+  --action-hover: #4338ca;  /* Indigo 700 */
+  --action-soft: rgba(79, 70, 229, 0.1);
+
+
+  --accent-gradient: linear-gradient(to bottom right, #a855f7, #4f46e5);
+
+  
+  --card-bg: rgba(255, 255, 255, 0.05); 
+  --input-bg: rgba(0, 0, 0, 0.3);
+  --ui-border: rgba(255, 255, 255, 0.1); 
+  --text-muted: #94a3b8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-action-soft: var(--action-soft);
+
+  --color-card-bg: var(--card-bg);
+  --color-ui-input: var(--input-bg);
+  --color-ui-border: var(--ui-border);
+  --color-text-muted: var(--text-muted);
+
+  --background-image-accent-gradient: var(--accent-gradient);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: linear-gradient(to bottom right, #111827, #000000); 
-    --foreground: #ededed;
-  }
-}
-*{
-
-  box-sizing: border-box;
-}
 
 body {
-  @apply bg-gradient-to-br from-gray-900 to-black min-h-screen text-white;
-  /* //background: var(--background);
-  //color: var(--foreground); */
-  
+  background: var(--background);
+  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  
-  background-attachment: fixed; 
-  height: 100%;
-  width: 100%;
-  max-width: 100vw;
-  /* overflow-x: hidden; */
-  /* overflow-y: hidden; */
+  @apply min-h-screen;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
 }
