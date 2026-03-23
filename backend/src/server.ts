@@ -17,7 +17,7 @@ const port = process.env.PORT || 4000;
 
 
 const httpServer = createServer((req, res) => {
-  if (req.url === '/') {
+  if (req.url === '/' || req.url === '/ping') {
     res.writeHead(200);
     res.end("SyncBoard Game Server is running!");
   } else {
@@ -33,6 +33,8 @@ const io = new Server(httpServer, {
     credentials: true
   }
 });
+
+
 // const app = next({ dev, hostname, port });
 // const handle = app.getRequestHandler();
 
@@ -251,6 +253,7 @@ const io = new Server(httpServer, {
 
   });
 
+  
   httpServer.listen(port, () => {
     console.log(`> Ready on http://${hostname}:${port}`);
   });

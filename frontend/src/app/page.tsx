@@ -10,6 +10,9 @@ export default function RoomSelect() {
 
   useEffect(() => {
     const socket = getSocket();
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+    fetch(backendUrl).catch(() => console.log("Server waking up...")); 
     
     // Check if already connected
     if (socket.connected) setIsConnected(true);
