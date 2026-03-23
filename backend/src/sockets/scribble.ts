@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
-import { users, rooms } from "./states.ts";
-import { broadcastPlayerList } from "./common.ts";
-import getWord from "../utils/getWord.ts";
+import { users, rooms } from "./states";
+import { broadcastPlayerList } from "./common";
+import getWord from "../utils/getWord";
 import { get } from "http";
 
 export const scribbleSocketHandler = (io: Server, socket: Socket) => {
@@ -98,10 +98,15 @@ export const scribbleSocketHandler = (io: Server, socket: Socket) => {
         io.in(data.room).emit("updateGameState", { drawingUser: currentRoom.drawingUser, currentWord: currentRoom.currentWord, round: currentRoom.round, scoreboard: currentRoom.scoreboard });
 
         io.in(data.room).emit("clearBoard");
+
+        
       }
     })
 
 
+
+    //send users for userList
+    
 
 
 };
