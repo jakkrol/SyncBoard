@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { users, rooms } from "./states.ts";
+import { users, rooms } from "./states";
 
 export const broadcastPlayerList = (io: Server, room: string) => {
     const players = rooms[room].users;
