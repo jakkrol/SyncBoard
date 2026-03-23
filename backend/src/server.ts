@@ -11,12 +11,17 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 //import { create } from "domain";
 
+const frontendUrl = process.env.FRONTEND_URL;
+console.log("Allowed Frontend URL:", frontendUrl);
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "0.0.0.0";
 const port = process.env.PORT || 4000;  
 
 
 const httpServer = createServer((req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', frontendUrl || '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+
   if (req.url === '/' || req.url === '/ping') {
     res.writeHead(200);
     res.end("SyncBoard Game Server is running!");
@@ -28,10 +33,11 @@ const httpServer = createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:3000", process.env.FRONTEND_URL as string].filter(Boolean),
+    origin: ["http://localhost:3000", frontendUrl].filter(Boolean) as string[],
     methods: ["GET", "POST"],
     credentials: true
-  }
+  },
+  transports: ["polling", "websocket"]
 });
 
 
