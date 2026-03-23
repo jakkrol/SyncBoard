@@ -20,10 +20,11 @@
 import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
+const url = process.env.NODE_PUBLIC_BACKEND_URL 
 
 export const getSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:4000");
+    socket = io(url);
 
     socket.on("connect_error", (err) => {
       console.error("Socket connection error:", err);

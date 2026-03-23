@@ -12,8 +12,8 @@ import { Server } from "socket.io";
 //import { create } from "domain";
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = 4000;
+const hostname = "0.0.0.0";
+const port = process.env.PORT || 4000;  
 
 
 const httpServer = createServer((req, res) => {
@@ -28,7 +28,7 @@ const httpServer = createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", process.env.FRONTEND_URL as string].filter(Boolean),
     methods: ["GET", "POST"],
     credentials: true
   }

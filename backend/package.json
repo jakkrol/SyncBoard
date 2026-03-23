@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
- "scripts": {
-    "dev": "ts-node src/server.ts", 
-    "build": "tsc"
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@types/node": "^25.0.3",
     "@types/socket.io": "^3.0.1",
+    "@types/ws": "^8.18.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
