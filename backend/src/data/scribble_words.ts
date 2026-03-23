@@ -1,0 +1,1 @@
+export const wordList = ["dog", "cat", "fish", "sun"]; 
