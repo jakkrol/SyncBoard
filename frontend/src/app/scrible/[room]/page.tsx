@@ -160,11 +160,11 @@ export default function Home() {
 
               
               {/* COL 2: CENTER PANEL */}
-              <div className="flex-1 flex flex-col relative ">
+              <div className="flex-1 flex flex-col relative items-center">
                   
                   {/*HEADER (If drawing now) */}
                   {checkIfDrawingAllowed && (
-                      <div className="h-16 w-full flex items-center justify-center">
+                      <div className="py-4 w-full flex items-center justify-center">
                           <h1 className="text-2xl font-bold text-blue-600">
                               Word to guess: {word}
                           </h1>
@@ -172,7 +172,7 @@ export default function Home() {
                   )}
 
           
-                  <div className="flex-1 relative m-5  overflow-hidden ">
+                  <div className="flex-initial relative  overflow-hidden ">
                       <BoardCanvas 
                           socket={socket} 
                           room={room as string} 
@@ -187,7 +187,7 @@ export default function Home() {
             
 
             {/* COL 3 */}
-            <div className="flex">
+            <div className="flex mt-10">
                 <Chat 
                     socket={socket} 
                     room={room as string} 

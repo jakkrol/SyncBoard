@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Socket } from "socket.io-client";
 import { onDraw } from "../../lib/socketHandlers/onDraw";
 import { onLoadBoard } from "../../lib/socketHandlers/onLoadBoard";
@@ -54,42 +54,46 @@ useEffect(() => {
 },[strokeWidth, strokeColor, isEraser]);
 
 
-const getPositionMouse = (e: React.MouseEvent) => {
+const getPositionMouse = (e: React.MouseEvent | React.TouchEvent) => {
+    const realPos = canvasRef.current; 
+    if(!realPos){return {x: 0, y: 0}}
     const pos = canvasRef.current!.getBoundingClientRect();
+
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+
+    const x = (clientX - pos.left) * (realPos.width / pos.width);
+    const y = (clientY - pos.top) * (realPos.height / pos.height);
     return {
-      x: e.clientX - pos.left,
-      y: e.clientY - pos.top,
+      x, y
     };
   };
 
-    return(
-        <canvas
-            className="cursor-crosshair"
-            width={1000}
-            height={600}
-            ref={canvasRef}
-            style={isAllowedToDraw ?{
-                border: "solid 1px #fff",
-                background: "#111",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                zIndex: 0,
-              } : {                
-                border: "solid 1px #fff",
-                background: "#111",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                zIndex: 0,
-                pointerEvents: 'none',
-              }}
-            onMouseDown={(e) => handleMouseDown(e, drawing, lastPos, getPositionMouse)}
-            onMouseMove={(e) => handleMouseMove(e, canvasRef, drawing, lastPos, getPositionMouse, socket, room, isEraser)} 
-            onMouseUp={(e) => handleMouseUp(drawing, lastPos)}
-            onMouseLeave={(e) => handleMouseUp(drawing, lastPos)}
-        />
-    );
+    return (
+  /* The Container: Control spacing here */
+  <div className="relative w-full max-w-250 aspect-5/3 mx-auto mt-8 overflow-hidden shadow-2xl border-2 border-white/20 rounded-lg">
+    <canvas
+      className="cursor-crosshair w-full h-full"
+      width={1000}
+      height={600}
+      ref={canvasRef}
+      style={{
+        background: "#111",
+        pointerEvents: isAllowedToDraw ? 'auto' : 'none',
+        display: "block",
+      }}
+      onMouseDown={(e) => handleMouseDown(e, drawing, lastPos, getPositionMouse)}
+      onMouseMove={(e) => handleMouseMove(e, canvasRef, drawing, lastPos, getPositionMouse, socket, room, isEraser)} 
+      onMouseUp={() => handleMouseUp(drawing, lastPos)}
+      onMouseLeave={() => handleMouseUp(drawing, lastPos)}
+      
+      /* Add Touch Support for Mobile */
+      onTouchStart={(e) => handleMouseDown(e as any, drawing, lastPos, getPositionMouse)}
+      onTouchMove={(e) => handleMouseMove(e as any, canvasRef, drawing, lastPos, getPositionMouse, socket, room, isEraser)}
+      onTouchEnd={() => handleMouseUp(drawing, lastPos)}
+    />
+  </div>
+);
 }
 
 

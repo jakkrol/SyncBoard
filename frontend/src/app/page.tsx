@@ -44,15 +44,19 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start pt-40 p-6 text-foreground">
+    <div className="min-h-screen flex flex-col items-center justify-start pt-10 p-6 text-foreground">
       
-      {/* 1. Connection Status */}
-      <div className={`fixed top-24 px-4 py-1.5 rounded-full border backdrop-blur-md transition-all duration-500 flex items-center gap-2 shadow-sm
-        ${isConnected ? 'border-green-500/30 bg-green-500/10' : 'border-amber-500/30 bg-amber-500/10'}`}>
-        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-amber-500 animate-pulse'}`} />
-        <span className="text-xs font-medium uppercase tracking-wider">
-          {isConnected ? 'Server Online' : 'Connecting to Server...'}
-        </span>
+      <div className="w-full flex justify-center mb-8"> {/* Kontener centrujący */}
+        <div className={`
+          px-4 py-1.5 rounded-full border backdrop-blur-md 
+          transition-all duration-500 flex items-center gap-2 shadow-sm
+          ${isConnected ? 'border-green-500/30 bg-green-500/10' : 'border-amber-500/30 bg-amber-500/10'}
+        `}>
+          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-amber-500 animate-pulse'}`} />
+          <span className="text-xs font-medium uppercase tracking-wider">
+            {isConnected ? 'Server Online' : 'Connecting to Server...'}
+          </span>
+        </div>
       </div>
 
       <h1 className="text-4xl font-bold mb-8 tracking-tight drop-shadow-lg text-primary">
