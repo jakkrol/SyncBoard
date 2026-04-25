@@ -81,6 +81,7 @@ const getPositionMouse = (e: React.MouseEvent | React.TouchEvent) => {
         background: "#111",
         pointerEvents: isAllowedToDraw ? 'auto' : 'none',
         display: "block",
+        touchAction: "none",
       }}
       onMouseDown={(e) => handleMouseDown(e, drawing, lastPos, getPositionMouse)}
       onMouseMove={(e) => handleMouseMove(e, canvasRef, drawing, lastPos, getPositionMouse, socket, room, isEraser)} 
@@ -94,6 +95,35 @@ const getPositionMouse = (e: React.MouseEvent | React.TouchEvent) => {
     />
   </div>
 );
+    // return(
+    //     <canvas
+    //         className="cursor-crosshair"
+    //         touch-action="none"
+    //         width={1000}
+    //         height={600}
+    //         ref={canvasRef}
+    //         style={isAllowedToDraw ?{
+    //             border: "solid 1px #fff",
+    //             background: "#111",
+    //             position: "absolute",
+    //             top: 0,
+    //             left: 0,
+    //             zIndex: 0,
+    //           } : {                
+    //             border: "solid 1px #fff",
+    //             background: "#111",
+    //             position: "absolute",
+    //             top: 0,
+    //             left: 0,
+    //             zIndex: 0,
+    //             pointerEvents: 'none',
+    //           }}
+    //         onMouseDown={(e) => handleMouseDown(e, drawing, lastPos, getPositionMouse)}
+    //         onMouseMove={(e) => handleMouseMove(e, canvasRef, drawing, lastPos, getPositionMouse, socket, room, isEraser)} 
+    //         onMouseUp={(e) => handleMouseUp(drawing, lastPos)}
+    //         onMouseLeave={(e) => handleMouseUp(drawing, lastPos)}
+    //     />
+    // );
 }
 
 

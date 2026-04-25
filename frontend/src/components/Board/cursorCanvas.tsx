@@ -93,6 +93,7 @@ const CursorOverlay = forwardRef<CursorOverlayRef, { socket: Socket | null; room
         zIndex: 10,
         pointerEvents: "none",
         display: "block",
+        touchAction: "none",
       }}
     />
   );
