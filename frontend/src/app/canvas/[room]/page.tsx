@@ -6,6 +6,7 @@ import { getSocket } from "../../../lib/socket";
 import BoardCanvas from "../../../components/Board/boardCanvas";
 import CursorOverlay, { CursorOverlayRef } from "../../../components/Board/cursorCanvas";
 import ColorPicker from "@/components/ColorPicker";
+import RotateNotice from "@/components/RotateNotice";
 
 export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -49,6 +50,7 @@ export default function Home() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       
+      <RotateNotice />
       {/* TWOJA ORYGINALNA LEWA KOLUMNA */}
       <div className="p-4 flex flex-col z-10 relative"> 
         <div className="mt-4">

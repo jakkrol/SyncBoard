@@ -8,6 +8,7 @@ import Chat from "../../../components/Chat";
 import ScribbleLobby from "../../../components/Board/ScribbleLobby";
 import ColorPicker from "../../../components/ColorPicker";
 import ScoreBoard from "@/components/ScoreBoard";
+import RotateNotice from "@/components/RotateNotice";
 
 export default function Home() {
     //const [connected, setConnected] = useState(false);
@@ -122,6 +123,8 @@ export default function Home() {
 
   return (
       <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+        <RotateNotice />
+
         {!gameStarted ? (
           <ScribbleLobby socket={socket} room={room as string} players={players} onStart={() => {handleStartGame()}} />
         ) : (
