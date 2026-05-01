@@ -1,4 +1,16 @@
   import { drawLine } from "../tools/drawLine";
+  import { handleSaveBoard } from "./handleSaveBoard";
+
+  function debounce(callback: Function, delay: number) {
+    let timeoutId: any;
+    return function(...args: any[]) {
+      clearTimeout(timeoutId!);
+      timeoutId = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    }
+  }
+  const debouncedSaveBoard = debounce(handleSaveBoard, 2000);
 
   export function handleMouseMove(e: React.MouseEvent, canvasRef: React.RefObject<HTMLCanvasElement | null>, drawing: React.RefObject<boolean>, lastPos: React.RefObject<{x: number, y: number} | null>, getPositionMouse: (e: React.MouseEvent) => {x: number, y: number}, socket: any, room: string, isEraser: boolean  ) {
     if(!drawing.current) return;
@@ -8,6 +20,9 @@
     
     drawLine(lastPos.current!.x, lastPos.current!.y, x, y, ctx!);
     socket?.emit("draw", {room, x0: lastPos.current!.x, y0: lastPos.current!.y, x1: x, y1: y, color: canvasRef.current!.getContext('2d')?.strokeStyle, width: canvasRef.current!.getContext('2d')?.lineWidth, isEraser});
-    socket?.emit("saveBoard", {room, data: canvasRef.current!.toDataURL()});
+    //socket?.emit("saveBoard", {room, data: canvasRef.current!.toDataURL()});
+    //handleSaveBoard(room, socket, canvasRef);
+    // debounce(handleSaveBoard, 3000)(room, socket, canvasRef);
+    debouncedSaveBoard(room, socket, canvasRef);
     lastPos.current = {x, y};
   }
