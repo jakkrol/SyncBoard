@@ -17,9 +17,20 @@ const dev = process.env.NODE_ENV !== "production";
 const hostname = "0.0.0.0";
 const port = process.env.PORT || 4000;  
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://syncboard.jakkrol.pl",
+  "https://syncboard-phi.vercel.app",
+  frontendUrl
+].filter(Boolean) as string[];
 
 const httpServer = createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', frontendUrl || '*');
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', frontendUrl || '*');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
 
   if (req.url === '/' || req.url === '/ping') {
@@ -33,7 +44,7 @@ const httpServer = createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:3000", frontendUrl].filter(Boolean) as string[],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true
   },

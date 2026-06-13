@@ -46,7 +46,7 @@ export default function RoomSelect() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start pt-10 p-6 text-foreground">
       
-      <div className="w-full flex justify-center mb-8"> {/* Kontener centrujący */}
+      <div className="w-full flex justify-center mb-8"> 
         <div className={`
           px-4 py-1.5 rounded-full border backdrop-blur-md 
           transition-all duration-500 flex items-center gap-2 shadow-sm
